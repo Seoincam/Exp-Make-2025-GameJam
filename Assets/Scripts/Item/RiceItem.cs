@@ -6,6 +6,11 @@ public sealed class RiceItem : Item
 {
     [SerializeField] private int healthAmount = 1;
 
+    public void Initialize(int amount)
+    {
+        healthAmount = Mathf.Max(0, amount);
+    }
+
     protected override void OnPickedBy(PlayerCharacter player)
     {
         if (!player || player.Stat == null)

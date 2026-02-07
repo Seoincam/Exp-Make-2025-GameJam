@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e60dce6a677d984c8298f5f0a23cb02, type: 3}
   m_Name: ChiliPepperAndTuna
   m_EditorClassIdentifier: Assembly-CSharp::BulletSO
+  bulletImage: {fileID: 21300000, guid: 27122e898495eff4a9c4294125394d04, type: 3}
   bulletPrefab: {fileID: 0}
   bulletCount: 25

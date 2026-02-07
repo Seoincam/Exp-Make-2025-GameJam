@@ -13,6 +13,7 @@ public sealed class WeaponItem : Item
     [Header("Runtime (From SO)")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private int bulletCount = 10;
+    [SerializeField] private SpriteRenderer itemSpriteRenderer;
 
     private bool _loadedFromSo;
     private PlayerState _loadedType;
@@ -20,6 +21,16 @@ public sealed class WeaponItem : Item
     public void Initialize(PlayerState type)
     {
         weaponType = type;
+        LoadFromBulletSO(forceReload: true);
+    }
+
+    private void OnEnable()
+    {
+        LoadFromBulletSO(forceReload: true);
+    }
+
+    private void OnValidate()
+    {
         LoadFromBulletSO(forceReload: true);
     }
 
@@ -79,8 +90,32 @@ public sealed class WeaponItem : Item
 
         bulletPrefab = so.BulletPrefab;
         bulletCount = so.BulletCount;
+        ApplyItemSprite(so.BulletImage);
         _loadedFromSo = true;
         _loadedType = weaponType;
+    }
+
+    private void ApplyItemSprite(Sprite sprite)
+    {
+        if (!sprite)
+        {
+            return;
+        }
+
+        if (!itemSpriteRenderer)
+        {
+            itemSpriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
+        if (!itemSpriteRenderer)
+        {
+            itemSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+
+        if (itemSpriteRenderer)
+        {
+            itemSpriteRenderer.sprite = sprite;
+        }
     }
 
     private static bool TryGetWeaponStatType(PlayerState state, out StatType statType)

@@ -123,6 +123,9 @@ namespace Player
             EffectManager.AddEffect(damageEffectSpec);
             
             _currentState?.OnDamage(damageInfo);
+
+            // Apply damage immediately instead of waiting for next FixedUpdate tick.
+            EffectManager.Tick(0f);
         }
 
         public void TakeDamage(DamageInfo damageInfo)

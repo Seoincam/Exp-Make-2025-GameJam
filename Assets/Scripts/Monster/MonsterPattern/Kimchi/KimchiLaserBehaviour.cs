@@ -76,15 +76,18 @@ public class KimchiLaserBehaviourSO : AttackBehaviourSO
         HideTelegraph(ctx);
 
         // ✅ 발사(방향 고정)
-        RaycastHit2D hit = Physics2D.Raycast(origin, fixedDir, fireRange, hitMask);
+        int resolvedHitMask = ResolveHitMask();
+        RaycastHit2D hit = FindFirstBlockingHit(origin, fixedDir, fireRange, resolvedHitMask, ctx.mono.transform);
 
         float beamLen = fireRange;
         if (hit.collider != null) beamLen = hit.distance;
 
+        bool shouldDamagePlayer = ShouldDamagePlayer(ctx, origin, fixedDir, beamLen, resolvedHitMask);
+
         if (beamSprite != null)
-            yield return ShowBeamAndDamage(ctx, origin, fixedDir, beamLen, hit);
+            yield return ShowBeamAndDamage(ctx, origin, fixedDir, beamLen, shouldDamagePlayer);
         else
-            ApplyDamageIfPlayerHit(hit, playerTag, damage, ctx.mono.gameObject);
+            ApplyDamageIfPlayerHit(ctx, shouldDamagePlayer, damage, ctx.mono.gameObject);
 
         if (recoverTime > 0f)
             yield return new WaitForSeconds(recoverTime);
@@ -107,7 +110,7 @@ public class KimchiLaserBehaviourSO : AttackBehaviourSO
         ctx.mono?.Telegraph?.Hide();
     }
 
-    IEnumerator ShowBeamAndDamage(MonsterContext ctx, Vector2 origin, Vector2 dir, float len, RaycastHit2D hit)
+    IEnumerator ShowBeamAndDamage(MonsterContext ctx, Vector2 origin, Vector2 dir, float len, bool shouldDamagePlayer)
     {
         // 빔 오브젝트 생성(매번 만들기 싫으면 MonsterController에 캐시해도 됨)
         var go = new GameObject($"{ctx.mono.name}_LaserBeam");
@@ -126,20 +129,142 @@ public class KimchiLaserBehaviourSO : AttackBehaviourSO
         go.transform.localScale = new Vector3(len, beamWidth, 1f);
 
         // 데미지 1회
-        ApplyDamageIfPlayerHit(hit, playerTag, damage, ctx.mono.gameObject);
+        ApplyDamageIfPlayerHit(ctx, shouldDamagePlayer, damage, ctx.mono.gameObject);
 
         // 잠깐 표시 후 제거
         yield return new WaitForSeconds(Mathf.Max(0.01f, beamShowTime));
         Object.Destroy(go);
     }
 
-    static void ApplyDamageIfPlayerHit(RaycastHit2D hit, string playerTag, float dmg, GameObject source)
+    int ResolveHitMask()
     {
-        if (hit.collider == null) return;
-        if (!hit.collider.CompareTag(playerTag)) return;
+        // 0이면 아무 것도 맞지 않으므로 기본 레이어 전체로 보정
+        if (hitMask.value == 0)
+        {
+            return Physics2D.DefaultRaycastLayers;
+        }
 
-        if (hit.collider.TryGetComponent<IDamagable>(out var d))
+        return hitMask.value;
+    }
+
+    static RaycastHit2D FindFirstBlockingHit(
+        Vector2 origin,
+        Vector2 dir,
+        float distance,
+        int mask,
+        Transform sourceRoot)
+    {
+        var hits = Physics2D.RaycastAll(origin, dir, distance, mask);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var hit = hits[i];
+            if (hit.collider == null) continue;
+            if (IsSelfOrChild(hit.collider, sourceRoot)) continue;
+            return hit;
+        }
+
+        return default;
+    }
+
+    bool ShouldDamagePlayer(
+        MonsterContext ctx,
+        Vector2 origin,
+        Vector2 dir,
+        float maxDistance,
+        int mask)
+    {
+        if (ctx.player == null)
+        {
+            return false;
+        }
+
+        Vector2 toPlayer = (Vector2)ctx.player.position - origin;
+        float along = Vector2.Dot(toPlayer, dir);
+
+        if (along < 0f || along > maxDistance)
+        {
+            return false;
+        }
+
+        // dir은 정규화되어 있으므로 외적 크기 = 선분까지 수선 거리
+        float perpendicularDistance = Mathf.Abs((toPlayer.x * dir.y) - (toPlayer.y * dir.x));
+        float hitHalfWidth = Mathf.Max(0.05f, beamWidth * 0.5f);
+        if (perpendicularDistance > hitHalfWidth)
+        {
+            return false;
+        }
+
+        // 플레이어까지 가는 경로에 플레이어 외 장애물이 있으면 빗맞음 처리
+        var hits = Physics2D.RaycastAll(origin, dir, along, mask);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var hit = hits[i];
+            if (hit.collider == null) continue;
+            if (IsSelfOrChild(hit.collider, ctx.mono.transform)) continue;
+            if (IsPlayerCollider(hit.collider, ctx.player, playerTag)) continue;
+            return false;
+        }
+
+        return true;
+    }
+
+    static bool IsSelfOrChild(Collider2D collider, Transform sourceRoot)
+    {
+        if (collider == null || sourceRoot == null)
+        {
+            return false;
+        }
+
+        return collider.transform == sourceRoot || collider.transform.IsChildOf(sourceRoot);
+    }
+
+    static bool IsPlayerCollider(Collider2D collider, Transform playerRoot, string playerTag)
+    {
+        if (collider == null)
+        {
+            return false;
+        }
+
+        if (playerRoot != null &&
+            (collider.transform == playerRoot || collider.transform.IsChildOf(playerRoot)))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrEmpty(playerTag))
+        {
+            if (collider.CompareTag(playerTag))
+            {
+                return true;
+            }
+
+            Transform root = collider.transform.root;
+            if (root != null && root.CompareTag(playerTag))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static void ApplyDamageIfPlayerHit(MonsterContext ctx, bool shouldDamagePlayer, float dmg, GameObject source)
+    {
+        if (!shouldDamagePlayer || ctx.player == null || dmg <= 0f)
+        {
+            return;
+        }
+
+        IDamagable d = ctx.player.GetComponent<IDamagable>();
+        if (d == null)
+        {
+            d = ctx.player.GetComponentInParent<IDamagable>();
+        }
+
+        if (d != null)
+        {
             d.Damage(new DamageInfo(dmg, source, EDamageType.Normal));
+        }
     }
 
     public override void OnInterrupt(MonsterContext ctx)
