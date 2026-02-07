@@ -16,6 +16,7 @@ namespace Player
 
         [Header("States")] 
         [SerializeField] private Stat stat;
+        [SerializeField] private EffectManager effectManager;
         
         private PlayerInputController _input;
 
@@ -32,11 +33,21 @@ namespace Player
             if (!rb) TryGetComponent(out rb);
 
             stat = new Stat(statConfig);
+            effectManager = new EffectManager(stat);
+
+            var effectSpec = Effect.CreateSpec(EffectType.Test)
+                .SetUnique()
+                .AddHandler(new LifeTimeHandler(5f))
+                .AddHandler(new TemporaryModifierHandler(StatType.Health, ModifierType.Additive, 10f));
+            var id = effectManager.AddEffect(effectSpec);
+            
+            Debug.Log("이펙트 추가됨: " + id);
         }
 
         private void FixedUpdate()
         {
             rb.linearVelocity = MoveInput;
+            effectManager.Tick(Time.fixedDeltaTime);
         }
     }
 }
