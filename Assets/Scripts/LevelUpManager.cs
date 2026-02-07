@@ -1,17 +1,32 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Player;
 using Shared.Stat;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DefaultNamespace
 {
     public class LevelUpManager : MonoBehaviour
     {
-        private PlayerCharacter Player => PlayerCharacter.Current;
+        [SerializeField] private List<Button> buttons = new();
         
+        private bool _upgraded;
+        private PlayerCharacter Player => PlayerCharacter.Current;
+
         private void Awake()
         {
             InitializeAsync().Forget();
+
+            if (buttons.Count != 3)
+            {
+                Debug.LogWarning("3개의 버튼이 존재하지 않습니다.");
+                return;
+            }
+
+            buttons[0].onClick.AddListener(OnClickAttackUp);
+            buttons[1].onClick.AddListener(OnClickAttackSpeedUp);
+            buttons[2].onClick.AddListener(OnClickMoveSpeedUp);
         }
 
         private async UniTask InitializeAsync()
@@ -23,11 +38,13 @@ namespace DefaultNamespace
 
         private void OnStatChanged(in Stat.StatChangedEventArgs args)
         {
+            if (_upgraded) return;
+
             if (args.Type == StatType.Exp)
             {
-                if ((int)args.NewFinalValue % 10 == 0)
+                if ((int)args.NewFinalValue > 3)
                 {
-                    Debug.Log("10의 배수");
+                    _upgraded = true;
                     ShowUI();
                 }
             }
@@ -41,6 +58,33 @@ namespace DefaultNamespace
         private void HideUI()
         {
             gameObject.SetActive(false);
+        }
+
+        private void OnClickAttackUp()
+        {
+            var effectSpec = Effect.CreateSpec(EffectType.Test)
+                .SetUnique()
+                .AddHandler(new InstantStatHandler(StatType.Damage, 2f));
+            Player.EffectManager.AddEffect(effectSpec);
+            HideUI();
+        }
+
+        private void OnClickAttackSpeedUp()
+        {
+            var effectSpec = Effect.CreateSpec(EffectType.Test)
+                .SetUnique()
+                .AddHandler(new InstantStatHandler(StatType.FireInterval, 2f));
+            Player.EffectManager.AddEffect(effectSpec);
+            HideUI();
+        }
+
+        private void OnClickMoveSpeedUp()
+        {
+            var effectSpec = Effect.CreateSpec(EffectType.Test)
+                .SetUnique()
+                .AddHandler(new InstantStatHandler(StatType.MoveSpeed, 2f));
+            Player.EffectManager.AddEffect(effectSpec);
+            HideUI();
         }
     }
 }
