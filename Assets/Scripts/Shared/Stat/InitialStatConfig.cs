@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Player.Stat
+namespace Shared.Stat
 {
     /// <summary>
     /// 플레이어 기본 스탯 설정 SO.
     /// </summary>
     [CreateAssetMenu(menuName = "Player/Stat", fileName = "Initial Stat Config")]
-    public class PlayerInitialStatConfig : ScriptableObject
+    public class InitialStatConfig : ScriptableObject
     {
         [SerializeField] private List<Entry> entries = new();
         

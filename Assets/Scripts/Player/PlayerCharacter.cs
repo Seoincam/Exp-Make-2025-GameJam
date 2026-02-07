@@ -1,4 +1,4 @@
-using Player.Stat;
+using Shared.Stat;
 using UnityEngine;
 
 namespace Player
@@ -12,10 +12,10 @@ namespace Player
         
         [Header("References")]
         [SerializeField] private Rigidbody2D rb;
-        [SerializeField] private PlayerInitialStatConfig statConfig;
+        [SerializeField] private InitialStatConfig statConfig;
 
         [Header("States")] 
-        [SerializeField] private PlayerStat stat;
+        [SerializeField] private Stat stat;
         
         private PlayerInputController _input;
 
@@ -31,7 +31,7 @@ namespace Player
             if (!_input) TryGetComponent(out _input);
             if (!rb) TryGetComponent(out rb);
 
-            stat = new PlayerStat(statConfig);
+            stat = new Stat(statConfig);
         }
 
         private void FixedUpdate()
