@@ -5,7 +5,7 @@ namespace Player
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody2D))]
-    public class PlayerCharacter : MonoBehaviour
+    public class PlayerCharacter : MonoBehaviour, IDamagable
     {
         [Header("Settings")] 
         [SerializeField] private float moveSpeed = 2f;
@@ -48,6 +48,26 @@ namespace Player
         {
             rb.linearVelocity = MoveInput;
             effectManager.Tick(Time.fixedDeltaTime);
+        }
+
+        public void Damage(DamageInfo damageInfo)
+        {
+            var amount = damageInfo.Damage;
+
+            if (stat == null)
+            {
+                Debug.LogWarning($"{nameof(PlayerCharacter)} on {name} has no stat instance.");
+                return;
+            }
+
+            if (amount <= 0f)
+            {
+                return;
+            }
+
+            var currentHp = stat.GetFinalValue(StatType.Health);
+            var nextHp = Mathf.Max(0f, currentHp - amount);
+            stat.SetFinalValue(StatType.Health, nextHp);
         }
     }
 }

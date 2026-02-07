@@ -1,4 +1,5 @@
 using Player.Control;
+using Combat.Shoot;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,6 +9,7 @@ namespace Player
     {
         [Header("References")]
         [SerializeField] private VirtualJoystick virtualJoystick;
+        [SerializeField] private ShootComponent shootComponent;
 
         private PlayerInputSystem _inputSystem;
         private Vector2 _actionMove;
@@ -24,6 +26,11 @@ namespace Player
             if (!virtualJoystick)
             {
                 virtualJoystick = FindObjectOfType<VirtualJoystick>();
+            }
+
+            if (!shootComponent)
+            {
+                TryGetComponent(out shootComponent);
             }
         }
 
@@ -53,6 +60,12 @@ namespace Player
         {
             var joystickMove = virtualJoystick ? virtualJoystick.GetInputVector() : Vector2.zero;
             Move = joystickMove.sqrMagnitude > 0f ? joystickMove : _actionMove;
+
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+            {
+                Debug.Log("Fire input: Space");
+                shootComponent?.Fire();
+            }
         }
 
         private void OnMove(InputAction.CallbackContext ctx)

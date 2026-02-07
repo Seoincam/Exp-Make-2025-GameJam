@@ -98,15 +98,10 @@ public class M1AnimationPlayer : AnimationPlayerBase
         switch (tag)
         {
             case MonsterStateTag.Idle: return idleHideKey;
-            case MonsterStateTag.Stun: return idleKey;
             case MonsterStateTag.Detect:
-            case MonsterStateTag.SearchWander:
             case MonsterStateTag.Trace: return walkKey;
-            case MonsterStateTag.Return: return (ctx != null && ctx.IsFastReturn) ? runKey : walkKey;
             case MonsterStateTag.CombatMove:
             case MonsterStateTag.CombatAttack:
-            case MonsterStateTag.Flee: return detectKey;
-            case MonsterStateTag.Hide: return hideKey;
             case MonsterStateTag.Killed: return hideKey;
             default: return null;
         }
