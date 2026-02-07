@@ -9,6 +9,8 @@ namespace Player
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerCharacter : MonoBehaviour, IDamagable, IEntity
     {
+        private const string NormalBulletSoPath = "Prefabs/BulletSO/Normal";
+
         [Header("References")]
         [SerializeField] private Rigidbody2D rb;
         [SerializeField] private InitialStatConfig statConfig;
@@ -27,6 +29,7 @@ namespace Player
         private Vector2 MoveInput => _input.Move * Stat.GetFinalValue(StatType.MoveSpeed);
 
         private PlayerStateBase _currentState;
+        private GameObject _defaultBulletPrefab;
 
         private void Reset()
         {
@@ -42,6 +45,7 @@ namespace Player
 
             Stat = new Stat(statConfig);
             EffectManager = new EffectManager(Stat);
+            _defaultBulletPrefab = shootComponent ? shootComponent.BulletPrefab : null;
 
             Current = this;
             
@@ -67,7 +71,7 @@ namespace Player
                 
                 if (_currentState.EndRequested)
                 {
-                    DisposeCurrentState();
+                    EnterNormalMode();
                 }
             }
             EffectManager.Tick(deltaTime);
@@ -170,6 +174,27 @@ namespace Player
             _currentState.OnExit();
             _currentState.Release();
             _currentState = null;
+        }
+
+        private void EnterNormalMode()
+        {
+            DisposeCurrentState();
+            ApplyNormalBulletPrefab();
+        }
+
+        private void ApplyNormalBulletPrefab()
+        {
+            var normalSo = Resources.Load<global::BulletSO>(NormalBulletSoPath);
+            if (normalSo && normalSo.BulletPrefab)
+            {
+                SetBulletPrefab(normalSo.BulletPrefab);
+                return;
+            }
+
+            if (_defaultBulletPrefab)
+            {
+                SetBulletPrefab(_defaultBulletPrefab);
+            }
         }
     }
 }
