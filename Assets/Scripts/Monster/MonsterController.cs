@@ -152,6 +152,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         var dmg = damageInfo.Damage;
         var sourceName = damageInfo.Source ? damageInfo.Source.name : "Unknown";
         var damageType = damageInfo.DamageType;
+        var effectFlags = damageInfo.EffectFlags;
 
         if (_killed)
             return;
@@ -159,7 +160,7 @@ public class MonsterController : MonoBehaviour, IDamagable
         CurrentHP = ctx.hp;
         OnHpChanged?.Invoke(CurrentHP, MaxHP);
         OnDamaged?.Invoke(dmg);
-        Debug.Log($"{monster_Id} 몬스터에게 {dmg} 피해! (type={damageType}, source={sourceName})");
+        Debug.Log($"{monster_Id} 몬스터에게 {dmg} 피해! (type={damageType}, effects={effectFlags}, source={sourceName})");
 
         /*
         string sfxName = null;
