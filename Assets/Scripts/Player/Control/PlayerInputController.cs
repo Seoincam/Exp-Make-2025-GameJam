@@ -23,5 +23,4 @@ namespace Player
             Move = ctx.ReadValue<Vector2>();
         }
     }
-
 }
