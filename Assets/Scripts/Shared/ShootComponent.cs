@@ -19,11 +19,23 @@ namespace Combat.Shoot
         [Header("Bullet")]
         [SerializeField] private GameObject bulletPrefab;
 
+        public GameObject BulletPrefab => bulletPrefab;
+
         public float SearchRadius => searchRadius;
 
         public bool IsCurrentBullet<TBullet>() where TBullet : BulletBase
         {
             return bulletPrefab && bulletPrefab.GetComponent<TBullet>() != null;
+        }
+
+        public void SetBulletPrefab(GameObject prefab)
+        {
+            if (!prefab)
+            {
+                return;
+            }
+
+            bulletPrefab = prefab;
         }
 
         private void Awake()

@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e60dce6a677d984c8298f5f0a23cb02, type: 3}
+  m_Name: Normal
+  m_EditorClassIdentifier: Assembly-CSharp::BulletSO
+  bulletPrefab: {fileID: 4720526849940897613, guid: 366794d8b2ddf4347b31fa6eb31fae31, type: 3}
+  bulletCount: 10

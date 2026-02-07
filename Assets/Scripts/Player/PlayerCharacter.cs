@@ -122,6 +122,21 @@ namespace Player
             Damage(damageInfo);
         }
 
+        public void SetBulletPrefab(GameObject bulletPrefab)
+        {
+            if (!bulletPrefab)
+            {
+                return;
+            }
+
+            if (!shootComponent)
+            {
+                TryGetComponent(out shootComponent);
+            }
+
+            shootComponent?.SetBulletPrefab(bulletPrefab);
+        }
+
         private PlayerStateBase CreateState(PlayerState stateType)
         {
             switch (stateType)
