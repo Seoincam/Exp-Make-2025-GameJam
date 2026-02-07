@@ -456,6 +456,7 @@ public class MonsterController : MonoBehaviour, IDamagable
     IEnumerator FadeOutAndDestroyRoutine(float seconds)
     {
         _killed = true;
+        GameManager.Instance.CatchMonster();
         _initialized = false;
 
         var srs = GetComponentsInChildren<SpriteRenderer>(true);
