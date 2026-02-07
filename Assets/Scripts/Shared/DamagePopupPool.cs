@@ -9,6 +9,7 @@ public sealed class DamagePopupPool : MonoBehaviour
     [SerializeField, Min(0)] private int prewarmCount = 16;
     [SerializeField] private Vector3 spawnOffset = new Vector3(0f, 1.2f, 0f);
     [SerializeField] private Canvas targetCanvas;
+    [SerializeField] private Camera worldCamera;
 
     private static DamagePopupPool _instance;
     public static DamagePopupPool Instance => _instance;
@@ -97,7 +98,7 @@ public sealed class DamagePopupPool : MonoBehaviour
             popup.transform.SetParent(null, true);
         }
 
-        popup.Play(this, damage, worldPosition, canvas);
+        popup.Play(this, damage, worldPosition, canvas, ResolveWorldCamera(canvas));
     }
 
     private DamagePopupView GetOrCreate()
@@ -150,5 +151,25 @@ public sealed class DamagePopupPool : MonoBehaviour
 
         targetCanvas = FindObjectOfType<Canvas>();
         return targetCanvas;
+    }
+
+    private Camera ResolveWorldCamera(Canvas canvas)
+    {
+        if (worldCamera)
+        {
+            return worldCamera;
+        }
+
+        if (canvas && canvas.worldCamera)
+        {
+            return canvas.worldCamera;
+        }
+
+        if (Camera.main)
+        {
+            return Camera.main;
+        }
+
+        return FindObjectOfType<Camera>();
     }
 }

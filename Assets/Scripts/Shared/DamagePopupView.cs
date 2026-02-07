@@ -17,10 +17,13 @@ public sealed class DamagePopupView : MonoBehaviour
 
     private RectTransform _rectTransform;
     private Canvas _canvas;
+    private Camera _worldCamera;
     private DamagePopupPool _pool;
     private float _elapsed;
     private Color _baseColor = Color.white;
     private Vector3 _worldPosition;
+    private Color _initialColor = Color.white;
+    private bool _hasInitialColor;
 
     public bool UsesCanvasSpace => useCanvasSpace;
 
@@ -58,6 +61,8 @@ public sealed class DamagePopupView : MonoBehaviour
         {
             uiText = GetComponentInChildren<Text>(true);
         }
+
+        CacheInitialColorIfNeeded();
     }
 
     private void OnEnable()
@@ -89,15 +94,17 @@ public sealed class DamagePopupView : MonoBehaviour
         }
     }
 
-    public void Play(DamagePopupPool pool, int damage, Vector3 worldPosition, Canvas canvas)
+    public void Play(DamagePopupPool pool, int damage, Vector3 worldPosition, Canvas canvas, Camera worldCamera)
     {
         _pool = pool;
         _canvas = canvas;
+        _worldCamera = worldCamera;
         _worldPosition = worldPosition;
         _elapsed = 0f;
 
         SetText(damage.ToString());
-        CaptureBaseColor();
+        CacheInitialColorIfNeeded();
+        _baseColor = _initialColor;
         SetColorWithAlpha(_baseColor.a);
 
         if (useCanvasSpace)
@@ -142,25 +149,34 @@ public sealed class DamagePopupView : MonoBehaviour
         }
     }
 
-    private void CaptureBaseColor()
+    private void CacheInitialColorIfNeeded()
     {
+        if (_hasInitialColor)
+        {
+            return;
+        }
+
         if (tmpText)
         {
-            _baseColor = tmpText.color;
+            _initialColor = tmpText.color;
+            _hasInitialColor = true;
             return;
         }
         if (uiText)
         {
-            _baseColor = uiText.color;
+            _initialColor = uiText.color;
+            _hasInitialColor = true;
             return;
         }
         if (textMesh)
         {
-            _baseColor = textMesh.color;
+            _initialColor = textMesh.color;
+            _hasInitialColor = true;
             return;
         }
 
-        _baseColor = Color.white;
+        _initialColor = Color.white;
+        _hasInitialColor = true;
     }
 
     private void SetColorWithAlpha(float alpha)
@@ -200,18 +216,42 @@ public sealed class DamagePopupView : MonoBehaviour
             return;
         }
 
-        Camera cam = _canvas.renderMode == RenderMode.ScreenSpaceOverlay
-            ? null
-            : (_canvas.worldCamera ? _canvas.worldCamera : Camera.main);
+        Camera worldToScreenCamera = ResolveWorldCamera();
+        Vector2 screenPoint = worldToScreenCamera
+            ? (Vector2)worldToScreenCamera.WorldToScreenPoint(_worldPosition)
+            : new Vector2(_worldPosition.x, _worldPosition.y);
 
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, _worldPosition);
+        Camera eventCamera = _canvas.renderMode == RenderMode.ScreenSpaceOverlay
+            ? null
+            : (_canvas.worldCamera ? _canvas.worldCamera : worldToScreenCamera);
+
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvasRect,
             screenPoint,
-            cam,
+            eventCamera,
             out Vector2 localPoint))
         {
             _rectTransform.anchoredPosition = localPoint;
         }
+    }
+
+    private Camera ResolveWorldCamera()
+    {
+        if (_worldCamera)
+        {
+            return _worldCamera;
+        }
+
+        if (_canvas && _canvas.worldCamera)
+        {
+            return _canvas.worldCamera;
+        }
+
+        if (Camera.main)
+        {
+            return Camera.main;
+        }
+
+        return FindObjectOfType<Camera>();
     }
 }

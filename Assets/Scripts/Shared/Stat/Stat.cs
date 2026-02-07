@@ -13,6 +13,7 @@ namespace Shared.Stat
         Health,
         MoveSpeed,
         FireInterval,
+        Damage,
         
         // Player
         

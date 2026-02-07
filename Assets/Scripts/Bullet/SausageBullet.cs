@@ -8,6 +8,7 @@ namespace Combat.Shoot
         [Header("Sausage")]
         [SerializeField, Min(0.1f)] private float bounceSearchRadius = 4f;
         [SerializeField, Min(1)] private int maxBounceCount = 10;
+        [SerializeField, Min(0.01f)] private float speedMultiplier = 1f / 3f;
 
         private readonly HashSet<int> _hitTargetIds = new();
 
@@ -18,12 +19,11 @@ namespace Combat.Shoot
 
         public override void Init(
             Transform target,
-            float speed,
             float damage,
-            GameObject owner,
-            float maxDistanceFromOwner)
+            GameObject owner)
         {
-            base.Init(target, speed, damage, owner, maxDistanceFromOwner);
+            base.Init(target, damage, owner);
+            Speed *= speedMultiplier;
 
             _hitTargetIds.Clear();
             _bounceCount = 0;

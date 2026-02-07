@@ -5,6 +5,10 @@ namespace Combat.Shoot
     [RequireComponent(typeof(CircleCollider2D), typeof(Rigidbody2D))]
     public abstract class BulletBase : MonoBehaviour
     {
+        [Header("Bullet Runtime")]
+        [SerializeField, Min(0.01f)] private float defaultSpeed = 15f;
+        [SerializeField, Min(0.1f)] private float defaultMaxDistanceFromOwner = 20f;
+
         private CircleCollider2D _circleCollider2D;
         private Rigidbody2D _rigidbody2D;
 
@@ -31,16 +35,14 @@ namespace Combat.Shoot
 
         public virtual void Init(
             Transform target,
-            float speed,
             float damage,
-            GameObject owner,
-            float maxDistanceFromOwner)
+            GameObject owner)
         {
             Target = target;
-            Speed = speed;
+            Speed = defaultSpeed;
             Damage = damage;
             Owner = owner;
-            MaxDistanceFromOwner = maxDistanceFromOwner;
+            MaxDistanceFromOwner = defaultMaxDistanceFromOwner;
         }
 
         protected virtual void FixedUpdate()

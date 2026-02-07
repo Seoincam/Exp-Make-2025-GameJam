@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Shared.Stat;
 using UnityEngine;
 
 namespace Combat.Shoot
@@ -17,9 +18,6 @@ namespace Combat.Shoot
 
         [Header("Bullet")]
         [SerializeField] private GameObject bulletPrefab;
-        [SerializeField] private float bulletSpeed = 15f;
-        [SerializeField] private float bulletMaxDistance = 20f;
-        [SerializeField] private float damage = 10f;
 
         public float SearchRadius => searchRadius;
 
@@ -117,7 +115,8 @@ namespace Combat.Shoot
             var bulletComp = BulletPool.Spawn(bulletPrefab, transform.position, Quaternion.identity);
             if (bulletComp)
             {
-                bulletComp.Init(target, bulletSpeed, damage, gameObject, bulletMaxDistance);
+                float damage = ResolveDamageFromOwner();
+                bulletComp.Init(target, damage, gameObject);
             }
 
             return bulletComp ? bulletComp.gameObject : null;
@@ -126,6 +125,16 @@ namespace Combat.Shoot
         public void Fire()
         {
             FireAtClosestEnemy();
+        }
+
+        private float ResolveDamageFromOwner()
+        {
+            if (TryGetComponent<IEntity>(out var entity) && entity.Stat != null)
+            {
+                return Mathf.Max(0f, entity.Stat.GetFinalValue(StatType.Damage));
+            }
+
+            return 0f;
         }
     }
 }

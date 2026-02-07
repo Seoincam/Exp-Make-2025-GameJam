@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 5185711496839008058}
   - component: {fileID: 5231073267217845986}
-  - component: {fileID: 920216471686659782}
-  - component: {fileID: 5529231392165617996}
+  - component: {fileID: 5488516933036111520}
   - component: {fileID: 184030685111717634}
+  - component: {fileID: -6290223221785287284}
   m_Layer: 0
-  m_Name: NormalBullet
+  m_Name: SausageBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.5896226, g: 0.937826, b: 1, a: 1}
+  m_Color: {r: 0.5660378, g: 0.0609579, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -94,21 +94,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &920216471686659782
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4720526849940897613}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ac81f08c4ed5c8478d64e0f645aa17a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.NormalBullet
-  defaultSpeed: 15
-  defaultMaxDistanceFromOwner: 20
---- !u!58 &5529231392165617996
+--- !u!58 &5488516933036111520
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,3 +157,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &-6290223221785287284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4720526849940897613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f18578df66da5494ab97921b946ce56e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.SausageBullet
+  defaultSpeed: 15
+  defaultMaxDistanceFromOwner: 20
+  bounceSearchRadius: 4
+  maxBounceCount: 10
+  speedMultiplier: 0.33333334

@@ -168,6 +168,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48b1e3704c086d445bd879fd5ba21d11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamagePopupView
+  useCanvasSpace: 1
   textMesh: {fileID: 0}
-  duration: 0.7
-  riseVelocity: {x: 0, y: 1.2, z: 0}
+  tmpText: {fileID: 0}
+  uiText: {fileID: 0}
+  duration: 0.5
+  riseVelocity: {x: 0, y: 0.5, z: 0}

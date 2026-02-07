@@ -8,12 +8,10 @@ namespace Combat.Shoot
 
         public override void Init(
             Transform target,
-            float speed,
             float damage,
-            GameObject owner,
-            float maxDistanceFromOwner)
+            GameObject owner)
         {
-            base.Init(target, speed, damage, owner, maxDistanceFromOwner);
+            base.Init(target, damage, owner);
 
             if (Target)
             {

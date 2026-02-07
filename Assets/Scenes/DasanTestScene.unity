@@ -196,7 +196,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -276,7 +276,7 @@ PrefabInstance:
     - target: {fileID: 6347181874924331050, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
       propertyPath: bulletPrefab
       value: 
-      objectReference: {fileID: 4720526849940897613, guid: 1626b005b5757ba459e57d8da40ee809, type: 3}
+      objectReference: {fileID: 4720526849940897613, guid: df33d5effb3305a42a65e1188556abcb, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -287,6 +287,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3246257950220803056, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
   m_PrefabInstance: {fileID: 175062650}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &358984091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 358984093}
+  - component: {fileID: 358984092}
+  m_Layer: 0
+  m_Name: DamagePool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &358984092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358984091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9965a4178b3763149854d3ac4fef25e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupPool
+  popupPrefab: {fileID: -4372288901473770562, guid: 1a56184ae11812448bfbc346641f830e, type: 3}
+  prewarmCount: 16
+  spawnOffset: {x: 0, y: 1.2, z: 0}
+  targetCanvas: {fileID: 170238406}
+  worldCamera: {fileID: 2100029333}
+--- !u!4 &358984093
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358984091}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.7585, y: 4.17689, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &660422637 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 717860563030547510, guid: ae9eba3e86efccb4bbdcecd8a62e6391, type: 3}
@@ -330,7 +379,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1, y: 0.5}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -460,7 +509,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1, y: 0.5}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -862,3 +911,4 @@ SceneRoots:
   - {fileID: 7933606017393323232}
   - {fileID: 1724222143}
   - {fileID: 175062650}
+  - {fileID: 358984093}
