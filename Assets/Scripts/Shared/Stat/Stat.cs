@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Player.Stat
+namespace Shared.Stat
 {
     public enum StatType
     {
@@ -13,14 +13,14 @@ namespace Player.Stat
     }
     
     [Serializable]
-    public class PlayerStat
+    public class Stat
     {
         // StatType
         [SerializeField] private List<StatEntry> stats = new();
         
         private Dictionary<StatType, StatEntry> _statCache = new();
 
-        public PlayerStat(PlayerInitialStatConfig config)
+        public Stat(InitialStatConfig config)
         {
             foreach (var configEntry in config.Entries)
             {
