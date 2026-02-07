@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Player;
 using Shared.Stat;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ namespace Combat.Shoot
 
         [Header("References")]
         [SerializeField] private Animator animator;
+        [SerializeField] private PlayerFace face;
+
 
         public GameObject BulletPrefab => bulletPrefab;
 
@@ -133,6 +136,7 @@ namespace Combat.Shoot
                 float damage = ResolveDamageFromOwner();
                 bulletComp.Init(target, damage, gameObject);
                 animator.SetTrigger("Attack");
+                face.Animator.SetTrigger("Attack");
             }
 
             return bulletComp ? bulletComp.gameObject : null;

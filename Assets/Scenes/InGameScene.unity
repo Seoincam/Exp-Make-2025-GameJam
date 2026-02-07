@@ -809,10 +809,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4963012792576525345, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
+      propertyPath: face
+      value: 
+      objectReference: {fileID: 1850816326}
     - target: {fileID: 6347181874924331050, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
       propertyPath: animator
       value: 
       objectReference: {fileID: 1711041282}
+    - target: {fileID: 6714241094883294234, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
+      propertyPath: <SpriteRenderer>k__BackingField
+      value: 
+      objectReference: {fileID: 1850816328}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -826,6 +834,22 @@ Transform:
 --- !u!95 &1711041282 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 2272865104564081299, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
+  m_PrefabInstance: {fileID: 1711041280}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1850816326 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6714241094883294234, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
+  m_PrefabInstance: {fileID: 1711041280}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 796831bb28df425685a7f7986c42e304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerFace
+--- !u!212 &1850816328 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4142208952002481152, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
   m_PrefabInstance: {fileID: 1711041280}
   m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
