@@ -8,6 +8,8 @@ namespace Shared.Stat
         Freeze,
         Burn,
         
+        RiceItem,
+        
         /// <summary>
         /// 마늘로 인한 이동 속도 버프.
         /// </summary>

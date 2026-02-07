@@ -17,6 +17,7 @@ namespace Player
         [SerializeField] private ShootComponent shootComponent;
         [SerializeField] private Animator animator;
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private PlayerFace face;
 
         [Header("States")] 
         [field: SerializeField] public Stat Stat { get; private set; }
@@ -60,9 +61,14 @@ namespace Player
         private void FixedUpdate()
         {
             rb.linearVelocity = MoveInput;
-            animator.SetBool("Walking", MoveInput.magnitude > 0f); 
-            spriteRenderer.flipX = MoveInput.x < 0f;
-            
+            animator.SetBool("Walking", MoveInput.magnitude > 0f);
+
+            if (MoveInput.magnitude > 0f)
+            {
+                spriteRenderer.flipX = MoveInput.x < 0f;
+                face.SpriteRenderer.flipX = MoveInput.x < 0f;
+            }
+
             var deltaTime = Time.fixedDeltaTime;
 
             if (_currentState != null)
