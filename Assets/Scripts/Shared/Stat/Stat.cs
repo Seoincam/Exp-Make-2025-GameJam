@@ -249,7 +249,7 @@ namespace Shared.Stat
 
                 if (pendingChange.BaseValueChanged || pendingChange.FinalValueChanged)
                 {
-                    eventArgs.Add(new StatChangedEventArgs(oldBaseValue, entry.baseValue, oldFinalValue, entry.finalValue));
+                    eventArgs.Add(new StatChangedEventArgs(statType, oldBaseValue, entry.baseValue, oldFinalValue, entry.finalValue));
                 }
             }
 
@@ -278,6 +278,7 @@ namespace Shared.Stat
 
         public struct StatChangedEventArgs
         {
+            public StatType Type { get; }
             public float OldBaseValue { get; }
             public float NewBaseValue { get; }
 
@@ -285,11 +286,13 @@ namespace Shared.Stat
             public float NewFinalValue { get; }
 
             public StatChangedEventArgs(
+                StatType type,
                 float oldBaseValue,
                 float newBaseValue,
                 float oldFinalValue,
                 float newFinalValue)
             {
+                Type = type;
                 OldBaseValue = oldBaseValue;
                 NewBaseValue = newBaseValue;
                 OldFinalValue = oldFinalValue;

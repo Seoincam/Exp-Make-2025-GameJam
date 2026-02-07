@@ -31,5 +31,12 @@ namespace Player.State
 
             Entity.EffectManager.AddEffect(spec);
         }
+
+        public override void OnStatChanged(Stat.StatChangedEventArgs args)
+        {
+            if (args.Type != StatType.SausageBullet) return;
+            
+            base.OnStatChanged(args);
+        }
     }
 }

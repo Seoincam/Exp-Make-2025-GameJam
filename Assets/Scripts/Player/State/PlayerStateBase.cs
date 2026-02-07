@@ -40,6 +40,7 @@ namespace Player.State
         
         public PlayerState StateType { get; protected set; }
         
+        public bool EndRequested { get; protected set; }
         
         public PlayerStateBase(IEntity entity)
         {
@@ -57,5 +58,13 @@ namespace Player.State
         public abstract void OnExit();
 
         public abstract void OnDamage(DamageInfo damageInfo);
+
+        public virtual void OnStatChanged(Stat.StatChangedEventArgs args)
+        {
+            if (args.NewFinalValue <= 0.001f)
+            {
+                EndRequested = true;
+            }
+        }
     }
 }
