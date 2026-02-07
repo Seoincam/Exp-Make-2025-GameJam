@@ -31,7 +31,7 @@ namespace Combat.Shoot
                 float distanceToOwner = Vector2.Distance(transform.position, Owner.transform.position);
                 if (distanceToOwner > MaxDistanceFromOwner)
                 {
-                    Destroy(gameObject);
+                    ReturnToPool();
                     return;
                 }
             }
@@ -47,6 +47,11 @@ namespace Combat.Shoot
             }
             
             OnHit(other);
+        }
+
+        public void ReturnToPool()
+        {
+            BulletPool.Return(this);
         }
 
         protected abstract void TickMovement(float deltaTime);
