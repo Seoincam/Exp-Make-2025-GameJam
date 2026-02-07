@@ -24,7 +24,7 @@ namespace Combat.Shoot
             MaxDistanceFromOwner = maxDistanceFromOwner;
         }
 
-        protected virtual void Update()
+        protected virtual void FixedUpdate()
         {
             if (Owner)
             {
@@ -36,7 +36,7 @@ namespace Combat.Shoot
                 }
             }
 
-            TickMovement(Time.deltaTime);
+            TickMovement(Time.fixedDeltaTime);
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -45,7 +45,7 @@ namespace Combat.Shoot
             {
                 return;
             }
-
+            
             OnHit(other);
         }
 
