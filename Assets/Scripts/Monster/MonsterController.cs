@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEditor;   // Handles, Gizmos
-#endif
 using UnityEngine;
-using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent), typeof(Animator), typeof(SpriteRenderer))]
+[RequireComponent(typeof(Animator), typeof(SpriteRenderer))]
 public class MonsterController : MonoBehaviour, IDamagable
 {
     [SerializeField] MonsterAnimationHub animationHub;
     public MonsterAnimationHub AnimationHub => animationHub;
-    public SpriteRenderer AlertSR { get; private set; }
-    [SerializeField] SpriteRenderer alertSR;
+
+
+    [Header("=== Runtime HP (Debug) ===")]
+    [SerializeField] float inspectorCurrentHP;
+    [SerializeField] float inspectorMaxHP;
+    [SerializeField] float inspectorHPRatio;
+
+
     [SerializeField] MonsterData data;
-    [SerializeField] public Vector3 spawner;
-    [SerializeField] LayerMask obstacleMask;
     [SerializeField] public string monster_Id;
-    public LayerMask ObstacleMask => obstacleMask;
-    // 캐시
+
     public MonsterData Data => data;
     public Animator Animator { get; private set; }
     public SpriteRenderer Sprite { get; private set; }
-    public Vector3 Spawner => spawner;
     public Transform Player { get; private set; }
+
     public MonsterStateMachine StateMachine => root;
+
     public float MaxHP { get; private set; }
     public float CurrentHP { get; private set; }
     public event Action<float, float> OnHpChanged;
@@ -33,21 +32,21 @@ public class MonsterController : MonoBehaviour, IDamagable
 
     MonsterStateMachine root = new();
     MonsterContext ctx;
-    [Header("Z-Lock")]
-    [SerializeField] bool lockZ = true;
-    [SerializeField] float lockedZ = -0.0001f;
 
     bool _initialized = false;
     public bool _killed = false;
+
+    bool _deathSequenceStarted;
+    Coroutine _deathCo;
+
     void Awake()
     {
         Animator = GetComponent<Animator>();
         if (!animationHub)
             animationHub = GetComponentInChildren<MonsterAnimationHub>(true);
+
         Sprite = GetComponent<SpriteRenderer>();
         Player = GameObject.FindWithTag("Player")?.transform;
-
-
     }
 
     public void InitAfterSpawn(string monsterId)
@@ -63,24 +62,34 @@ public class MonsterController : MonoBehaviour, IDamagable
             return;
         }
 
-        ctx = new(this);
-        ctx.hub.ResetAll();
-        _killed = false;
+        monster_Id = monsterId;
+
+        MaxHP = Data.maxHp;
         CurrentHP = MaxHP;
-        ctx.hp = MaxHP;
         OnHpChanged?.Invoke(CurrentHP, MaxHP);
 
+        _killed = false;
+        _deathSequenceStarted = false;
+        if (_deathCo != null) { StopCoroutine(_deathCo); _deathCo = null; }
+
+        // (풀링 쓰면 여기서 알파 복구도 해주는 게 좋음)
+        ResetAllSpriteAlpha();
+
+        SyncInspectorHP();
+        ctx = new MonsterContext(this);
+        ctx.hub.ResetAll();
+        ctx.hp = MaxHP;
+
         root = new MonsterStateMachine();
-        root.ChangeState(new MonsterIdleState(ctx, root));
+        root.ChangeState(new MonsterDetectState(ctx, root));
+
         _initialized = true;
     }
+
     void OnDisable()
     {
-        _initialized = false;           // 풀로 반환될 때 등, 안전 가드
-    }
-
-    void Start()
-    {
+        _initialized = false;
+        if (_deathCo != null) { StopCoroutine(_deathCo); _deathCo = null; }
     }
 
     void Update()
@@ -88,123 +97,112 @@ public class MonsterController : MonoBehaviour, IDamagable
         if (!_initialized) return;
         root.Tick();
     }
-    void LateUpdate()
-    {
-        if (!_initialized) return;
-        if (!lockZ) return;
 
-        var p = transform.position;
-        if (Mathf.Abs(p.z - lockedZ) > 1e-6f)
-        {
-            p.z = lockedZ;
-            transform.position = p;
-
-        }
-    }
-
-    #region 피격 시 깜빡거림
-    Coroutine _damageBlinkCo;
-
-    // MPB 헬퍼 (플레이어와 동일)
-    static void SetSpriteAlpha(SpriteRenderer sr, float a)
-    {
-        if (!sr) return;
-        var mpb = new MaterialPropertyBlock();
-        sr.GetPropertyBlock(mpb);
-        if (mpb == null) mpb = new MaterialPropertyBlock();
-
-        Color baseColor = Color.white;
-        if (sr.sharedMaterial && sr.sharedMaterial.HasProperty("_Color"))
-            baseColor = sr.sharedMaterial.color;
-        mpb.SetColor("_Color", new Color(baseColor.r, baseColor.g, baseColor.b, a));
-        sr.SetPropertyBlock(mpb);
-    }
-    static void ResetSpriteAlpha(SpriteRenderer sr)
-    {
-        SetSpriteAlpha(sr, 1f);
-    }
-
-    IEnumerator DamageBlinkRoutine(float duration = 1f, float blinkInterval = 0.1f)
-    {
-        float t = 0f;
-        bool low = false;
-        const float lowA = 0.35f;
-
-        while (t < duration)
-        {
-            low = !low;
-            SetSpriteAlpha(Sprite, low ? lowA : 1f);
-            yield return new WaitForSeconds(blinkInterval);
-            t += blinkInterval;
-        }
-        ResetSpriteAlpha(Sprite);
-        _damageBlinkCo = null;
-    }
-    #endregion
-    // 외부에서 데미지
-    public void Damage(DamageInfo damageInfo)
-    {
-        TakeDamage(damageInfo);
-    }
+    public void Damage(DamageInfo damageInfo) => TakeDamage(damageInfo);
 
     public void TakeDamage(DamageInfo damageInfo)
     {
-        var dmg = damageInfo.Damage;
-        var sourceName = damageInfo.Source ? damageInfo.Source.name : "Unknown";
-        var damageType = damageInfo.DamageType;
-        var effectFlags = damageInfo.EffectFlags;
+        if (_killed) return;
 
-        if (_killed)
-            return;
+        var dmg = damageInfo.Damage;
+
         ctx.hp = Mathf.Max(0, ctx.hp - dmg);
         CurrentHP = ctx.hp;
         OnHpChanged?.Invoke(CurrentHP, MaxHP);
         OnDamaged?.Invoke(dmg);
-        Debug.Log($"{monster_Id} 몬스터에게 {dmg} 피해! (type={damageType}, effects={effectFlags}, source={sourceName})");
-
-        /*
-        string sfxName = null;
-        switch (ctx.data.category)
-        {
-            case MonsterData.MonsterCategory.Cleaner:
-                sfxName = "SFX_CleanerDamaged";
-                break;
-            case MonsterData.MonsterCategory.Hound:
-                sfxName = "SFX_HoundDamaged";
-                break;
-            case MonsterData.MonsterCategory.Beetle:
-                sfxName = "SFX_BettleDamaged";
-                break;
-            case MonsterData.MonsterCategory.Titan:
-                sfxName = "SFX_TitanDamaged";
-                break;
-            default:
-                sfxName = "SFX_GenericDamaged";
-                break;
-        }
-
-        if (!string.IsNullOrEmpty(sfxName))
-        {
-            SoundManager.Instance.PlaySound3D(
-                sfxName,
-                transform,       // 이 몬스터의 위치에서
-                0f,               // delay 없음
-                false,            // isLoop = false (한 번만)
-                SoundType.SFX,
-                true,             // attachToTarget = true (몬스터 따라감)
-                1.5f,             // minDistance
-                25f               // maxDistance
-            );
-        }
-        */
-        if (_damageBlinkCo != null) StopCoroutine(_damageBlinkCo);
-        _damageBlinkCo = StartCoroutine(DamageBlinkRoutine(1f, 0.1f));
+        SyncInspectorHP();
 
         if (ctx.hp <= 0f)
         {
             StateMachine.ChangeState(new MonsterKilledState(ctx, StateMachine, gameObject, this));
             return;
         }
-        
+    }
+
+    // 죽음 시퀀스: 드롭 + 페이드
+    public void BeginDeathSequence()
+    {
+        if (_deathSequenceStarted) return;
+        _deathSequenceStarted = true;
+
+        // 드롭
+        TryDropCurrency();
+
+        // 페이드
+        float fadeSec = (Data != null && Data.deathFadeSeconds > 0f) ? Data.deathFadeSeconds : 0.6f;
+        _deathCo = StartCoroutine(FadeOutAndDestroyRoutine(fadeSec));
+    }
+
+    void TryDropCurrency()
+    {
+        if (Data == null) return;
+        if (Data.dropCurrencyAmount <= 0) return;
+        if (!Data.currencyDropPrefab) return;
+
+        var go = Instantiate(Data.currencyDropPrefab, transform.position, Quaternion.identity);
+
+        var pickup = go.GetComponent<CurrencyPickup>();
+        if (pickup != null)
+        {
+            pickup.Init(Data.dropCurrencyAmount);
+        }
+        else
+        {
+            Debug.LogWarning($"[{name}] currencyDropPrefab에 CurrencyPickup이 없음: {Data.currencyDropPrefab.name}");
+        }
+    }
+
+    IEnumerator FadeOutAndDestroyRoutine(float seconds)
+    {
+        _killed = true;
+        _initialized = false;
+
+        var srs = GetComponentsInChildren<SpriteRenderer>(true);
+        // 원래 색 캐시
+        var baseColors = new Color[srs.Length];
+        for (int i = 0; i < srs.Length; i++)
+            baseColors[i] = srs[i] ? srs[i].color : Color.white;
+
+        float t = 0f;
+        while (t < seconds)
+        {
+            float a = Mathf.Lerp(1f, 0f, t / seconds);
+            for (int i = 0; i < srs.Length; i++)
+            {
+                var sr = srs[i];
+                if (!sr) continue;
+                var c = baseColors[i];
+                sr.color = new Color(c.r, c.g, c.b, a);
+            }
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        for (int i = 0; i < srs.Length; i++)
+        {
+            var sr = srs[i];
+            if (!sr) continue;
+            var c = baseColors[i];
+            sr.color = new Color(c.r, c.g, c.b, 0f);
+        }
+
+        Destroy(gameObject); // 풀링이면 SetActive(false)로 교체
+    }
+    void SyncInspectorHP()
+    {
+        inspectorCurrentHP = CurrentHP;
+        inspectorMaxHP = MaxHP;
+        inspectorHPRatio = MaxHP > 0f ? CurrentHP / MaxHP : 0f;
+    }
+    void ResetAllSpriteAlpha()
+    {
+        var srs = GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sr in srs)
+        {
+            if (!sr) continue;
+            var c = sr.color;
+            if (c.a < 1f) sr.color = new Color(c.r, c.g, c.b, 1f);
+        }
     }
 }

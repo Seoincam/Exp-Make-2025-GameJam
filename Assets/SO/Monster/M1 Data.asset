@@ -10,15 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfc00a4e40923d9478f5d3408c22d6cd, type: 3}
-  m_Name: MonsterData
+  m_Name: M1 Data
   m_EditorClassIdentifier: Assembly-CSharp::MonsterData
-  monsterName: Normal
+  monsterName: M1
   maxHp: 100
   attackPower: 5
   attackCooldown: 1.5
   attackRange: 1.2
-  traceDesiredDistance: 4
-  traceNearDistance: 2.5
-  traceFarDistance: 5.5
-  defaultHitStunSeconds: 0.3
+  pixelsPerUnit: 16
+  moveSpeedPixelsPerSec: 40
+  attackEnterDistance: 2.2
+  attackExitDistance: 3
+  combatMoveBehaviours: []
+  combatAttackBehaviours: []
+  moveWeights:
+  - 60
+  - 25
+  - 15
   category: 0
+  defaultHitStunSeconds: 0.3
+  dropCurrencyAmount: 0
+  currencyDropPrefab: {fileID: 0}
+  deathFadeSeconds: 0.8
