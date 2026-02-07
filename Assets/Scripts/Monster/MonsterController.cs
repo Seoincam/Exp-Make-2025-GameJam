@@ -52,10 +52,17 @@ public class MonsterController : MonoBehaviour, IDamagable
     public float MaxHP { get; private set; }
     public float CurrentHP { get; private set; }
     public float CurrentMoveSpeedPixelsPerSec
-        => stat != null
-            ? Mathf.Max(0f, stat.GetFinalValue(StatType.MoveSpeed))
-            : (Data != null ? Mathf.Max(0f, Data.moveSpeedPixelsPerSec) : 0f);
+    {
+        get
+        {
+            float baseSpeed =
+                stat != null
+                    ? Mathf.Max(0f, stat.GetFinalValue(StatType.MoveSpeed))
+                    : (Data != null ? Mathf.Max(0f, Data.moveSpeedPixelsPerSec) : 0f);
 
+            return baseSpeed * _cachedFieldMultiplier;
+        }
+    }
     public event Action<float, float> OnHpChanged;
     public event Action<float> OnDamaged;
 
@@ -400,6 +407,8 @@ public class MonsterController : MonoBehaviour, IDamagable
         _moveSpeedMultipliersBySource[source] = multiplier;
 
         RecomputeMoveSpeedMultiplier();
+
+        Debug.Log($"[MoveSpeedBuff] {name} mult={_cachedFieldMultiplier:0.###} finalSpeed={CurrentMoveSpeedPixelsPerSec:0.###}");
     }
 
     public void RemoveMoveSpeedMultiplierBuff(object source)
@@ -407,8 +416,14 @@ public class MonsterController : MonoBehaviour, IDamagable
         if (_moveSpeedMultipliersBySource == null) return;
         if (!_moveSpeedMultipliersBySource.Remove(source)) return;
 
+        if (_moveSpeedMultipliersBySource.Count == 0)
+            _moveSpeedMultipliersBySource = null;
+
         RecomputeMoveSpeedMultiplier();
+
+        Debug.Log($"[MoveSpeedBuff] {name} mult={_cachedFieldMultiplier:0.###} finalSpeed={CurrentMoveSpeedPixelsPerSec:0.###}");
     }
+
 
     void RecomputeMoveSpeedMultiplier()
     {

@@ -9,8 +9,6 @@ public class SoySauceField : MonoBehaviour
     [SerializeField] float duration = 10f;
     [SerializeField, Range(0f, 3f)] float speedBonus01 = 0.30f;
 
-    // 장판의 실제 영역은 BoxCollider2D가 담당 (width/height 수동 스캔 제거)
-
     [Header("Layer Filter")]
     [SerializeField] LayerMask monsterMask;
     [SerializeField] LayerMask playerMask;
@@ -28,44 +26,75 @@ public class SoySauceField : MonoBehaviour
 
     BoxCollider2D _trigger;
 
-    public void Init(float duration, float speedBonus01, Vector2 size)
+    // ====== 프리팹 없이 생성하는 팩토리 ======
+    public static SoySauceField Spawn(
+        Vector3 position,
+        float duration,
+        float speedBonus01,
+        Vector2 size,
+        LayerMask monsterMask,
+        LayerMask playerMask,
+        float playerTickInterval = 0.5f,
+        float playerTickDamage = 5f,
+        bool debugLog = false,
+        Transform parent = null
+    )
     {
-        this.duration = Mathf.Max(0.01f, duration);
-        this.speedBonus01 = Mathf.Max(0f, speedBonus01);
+        var go = new GameObject("SoySauceField_Runtime");
+        if (parent) go.transform.SetParent(parent);
+        go.transform.position = position;
+        go.transform.rotation = Quaternion.identity;
 
-        EnsureTrigger();
-        _trigger.size = new Vector2(Mathf.Max(0.01f, size.x), Mathf.Max(0.01f, size.y));
+        // 트리거 이벤트 보장용 Rigidbody2D
+        var rb = go.AddComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.simulated = true;
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
 
-        Destroy(gameObject, this.duration);
+        // 콜라이더
+        var box = go.AddComponent<BoxCollider2D>();
+        box.isTrigger = true;
+        box.size = new Vector2(Mathf.Max(0.01f, size.x), Mathf.Max(0.01f, size.y));
+
+        // 본체
+        var field = go.AddComponent<SoySauceField>();
+        field.duration = Mathf.Max(0.01f, duration);
+        field.speedBonus01 = Mathf.Max(0f, speedBonus01);
+        field.monsterMask = monsterMask;
+        field.playerMask = playerMask;
+        field.playerTickInterval = Mathf.Max(0.01f, playerTickInterval);
+        field.playerTickDamage = Mathf.Max(0f, playerTickDamage);
+        field.log = debugLog;
+        field._trigger = box;
+
+        // life
+        Object.Destroy(go, field.duration);
+        return field;
     }
 
     void Awake()
     {
         EnsureTrigger();
-        Destroy(gameObject, duration);
+        // Spawn()로 만들면 이미 Destroy 예약이 걸려있지만, 혹시 수동 배치도 지원
+        if (duration > 0f) Destroy(gameObject, duration);
     }
 
     void EnsureTrigger()
     {
         if (_trigger) return;
-
         _trigger = GetComponent<BoxCollider2D>();
         _trigger.isTrigger = true;
-
-        // 오브젝트 스케일로 콜라이더가 비정상적으로 찌그러지는 걸 방지하려면
-        // 프리팹의 transform scale을 (1,1,1)로 두는 걸 권장.
     }
 
-    static bool IsInLayerMask(int layer, LayerMask mask)
-    {
-        return (mask.value & (1 << layer)) != 0;
-    }
+    static bool IsInLayerMask(int layer, LayerMask mask) => (mask.value & (1 << layer)) != 0;
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        int layer = other.gameObject.layer;
+        Debug.Log($"[SoySauceField] ENTER: {other.name} layer={LayerMask.LayerToName(other.gameObject.layer)} rootLayer={LayerMask.LayerToName(other.transform.root.gameObject.layer)}");
+    
+    int layer = other.gameObject.layer;
 
-        // ---- Monster ----
         if (IsInLayerMask(layer, monsterMask))
         {
             var mc = other.GetComponentInParent<MonsterController>();
@@ -77,7 +106,6 @@ public class SoySauceField : MonoBehaviour
             return;
         }
 
-        // ---- Player ----
         if (IsInLayerMask(layer, playerMask))
         {
             _playerInsideCount++;
@@ -92,7 +120,6 @@ public class SoySauceField : MonoBehaviour
     {
         int layer = other.gameObject.layer;
 
-        // ---- Monster ----
         if (IsInLayerMask(layer, monsterMask))
         {
             var mc = other.GetComponentInParent<MonsterController>();
@@ -104,7 +131,6 @@ public class SoySauceField : MonoBehaviour
             return;
         }
 
-        // ---- Player ----
         if (IsInLayerMask(layer, playerMask))
         {
             _playerInsideCount = Mathf.Max(0, _playerInsideCount - 1);
@@ -120,34 +146,23 @@ public class SoySauceField : MonoBehaviour
 
     IEnumerator PlayerTickLoop()
     {
-        // 첫 틱을 즉시 주고 싶으면 yield return null 제거
         while (_playerInsideCount > 0)
         {
             // TODO: 여기서 플레이어 틱 데미지 적용 직전 훅
             Debug.Log($"[SoySauceField] Player tick about to apply: {playerTickDamage}");
-
-            yield return new WaitForSeconds(Mathf.Max(0.01f, playerTickInterval));
+            yield return new WaitForSeconds(playerTickInterval);
         }
-
         _playerTickCo = null;
     }
 
-    void OnDisable()
-    {
-        Cleanup();
-    }
-
-    void OnDestroy()
-    {
-        Cleanup();
-    }
+    void OnDisable() => Cleanup();
+    void OnDestroy() => Cleanup();
 
     void Cleanup()
     {
         foreach (var mc in _buffedMonsters)
-        {
             if (mc) mc.RemoveMoveSpeedMultiplierBuff(this);
-        }
+
         _buffedMonsters.Clear();
 
         if (_playerTickCo != null)
@@ -157,15 +172,4 @@ public class SoySauceField : MonoBehaviour
         }
         _playerInsideCount = 0;
     }
-
-#if UNITY_EDITOR
-    void OnDrawGizmosSelected()
-    {
-        var box = GetComponent<BoxCollider2D>();
-        if (!box) return;
-
-        Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.DrawWireCube(box.offset, box.size);
-    }
-#endif
 }
