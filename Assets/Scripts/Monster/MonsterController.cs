@@ -28,11 +28,6 @@ public class MonsterController : MonoBehaviour, IDamagable
     [SerializeField] Stat stat;
     [SerializeField] EffectManager effectManager;
 
-    [Header("=== Damage Effect Settings ===")]
-    [SerializeField] float slowDuration = 1.25f;
-    [SerializeField, Range(0.05f, 1f)] float slowMultiplier = 0.6f;
-    [SerializeField] float stunDuration = 0.35f;
-    [SerializeField] float freezeDuration = 0.6f;
 
     float _nextContactDamageTime;
     bool _isTouchingPlayer;
@@ -236,7 +231,6 @@ public class MonsterController : MonoBehaviour, IDamagable
         stat.SetBaseValue(StatType.Health, nextHp);
         stat.ApplyPendingChanges();
 
-        ApplyDamageEffects(damageInfo);
         OnDamaged?.Invoke(dmg);
 
         SyncCurrentHpFromStat(true);
@@ -247,43 +241,6 @@ public class MonsterController : MonoBehaviour, IDamagable
         }
     }
 
-    void ApplyDamageEffects(in DamageInfo damageInfo)
-    {
-        if (effectManager == null)
-            return;
-
-        var flags = damageInfo.EffectFlags;
-
-        if ((flags & EDamageEffectFlags.Slow) != 0)
-        {
-            var slowSpec = Effect.CreateSpec(EffectType.Slow)
-                .SetUnique()
-                .AddHandler(new LifeTimeHandler(Mathf.Max(0.01f, slowDuration)))
-                .AddHandler(new TemporaryModifierHandler(StatType.MoveSpeed, ModifierType.Multiplicative, slowMultiplier));
-            effectManager.AddEffect(slowSpec);
-        }
-
-        if ((flags & EDamageEffectFlags.Stun) != 0)
-        {
-            var stunSpec = Effect.CreateSpec(EffectType.Stun)
-                .SetUnique()
-                .AddHandler(new LifeTimeHandler(Mathf.Max(0.01f, stunDuration)))
-                .AddHandler(new TemporaryModifierHandler(StatType.MoveSpeed, ModifierType.Override, 0f));
-            effectManager.AddEffect(stunSpec);
-        }
-
-        if ((flags & EDamageEffectFlags.Freeze) != 0)
-        {
-            var freezeSpec = Effect.CreateSpec(EffectType.Freeze)
-                .SetUnique()
-                .AddHandler(new LifeTimeHandler(Mathf.Max(0.01f, freezeDuration)))
-                .AddHandler(new TemporaryModifierHandler(StatType.MoveSpeed, ModifierType.Override, 0f));
-            effectManager.AddEffect(freezeSpec);
-        }
-
-        // Apply queued final-value changes caused by newly added effects immediately.
-        effectManager.Tick(0f);
-    }
 
     public void BeginDeathSequence()
     {

@@ -1,3 +1,4 @@
+using Combat.Shoot;
 using Shared.Stat;
 using Combat.Shoot;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace Player
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody2D))]
-    public class PlayerCharacter : MonoBehaviour, IDamagable
+    public class PlayerCharacter : MonoBehaviour, IDamagable, IEntity
     {
         [Header("Settings")] 
         [SerializeField] private float moveSpeed = 2f;
@@ -18,8 +19,8 @@ namespace Player
         [SerializeField] private ShootComponent shootComponent;
 
         [Header("States")] 
-        [SerializeField] private Stat stat;
-        [SerializeField] private EffectManager effectManager;
+        [field: SerializeField] public Stat Stat { get; private set; }
+        [field: SerializeField] public EffectManager EffectManager { get; private set; }
         
         private PlayerInputController _input;
 
@@ -37,8 +38,8 @@ namespace Player
             if (!rb) TryGetComponent(out rb);
             if (!shootComponent) TryGetComponent(out shootComponent);
 
-            stat = new Stat(statConfig);
-            effectManager = new EffectManager(stat);
+            Stat = new Stat(statConfig);
+            EffectManager = new EffectManager(Stat);
 
             // 테스트
             // var effectSpec = Effect.CreateSpec(EffectType.Test)
@@ -51,7 +52,7 @@ namespace Player
         private void FixedUpdate()
         {
             rb.linearVelocity = MoveInput;
-            effectManager.Tick(Time.fixedDeltaTime);
+            EffectManager.Tick(Time.fixedDeltaTime);
         }
 
         private float GetCurrentMoveSpeed()
@@ -70,7 +71,7 @@ namespace Player
         {
             var amount = damageInfo.Damage;
 
-            if (stat == null)
+            if (Stat == null)
             {
                 Debug.LogWarning($"{nameof(PlayerCharacter)} on {name} has no stat instance.");
                 return;
@@ -81,10 +82,10 @@ namespace Player
                 return;
             }
 
-            var currentHp = stat.GetBaseValue(StatType.Health);
+            var currentHp = Stat.GetBaseValue(StatType.Health);
             var nextHp = Mathf.Max(0f, currentHp - amount);
-            stat.SetBaseValue(StatType.Health, nextHp);
-            stat.ApplyPendingChanges();
+            Stat.SetBaseValue(StatType.Health, nextHp);
+            Stat.ApplyPendingChanges();
         }
     }
 }

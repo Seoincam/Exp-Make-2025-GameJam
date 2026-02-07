@@ -8,10 +8,10 @@ public sealed class MonsterContext
     public readonly Animator anim;
     public readonly MonsterAnimationHub animationHub;
     public readonly SpriteRenderer sr;
+    public Transform player => mono.Player;
 
     public MonsterDecisionHub hub { get; private set; }
 
-    public readonly Transform player;
     public readonly MonsterController mono;
     public readonly MonsterStateMachine sm;
 
@@ -50,7 +50,6 @@ public sealed class MonsterContext
         sr = owner.Sprite;
         animationHub = owner.AnimationHub;
 
-        player = owner.Player;
 
         hub = new MonsterDecisionHub(this);
     }
