@@ -1,23 +1,25 @@
+using System;
 using Player.Control;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Player
 {
-    public class PlayerInputController
+    public class PlayerInputController : MonoBehaviour
     {
-        private readonly PlayerInputSystem _inputSystem = new();
+        private PlayerInputSystem _inputSystem;
         
         public Vector2 Move { get; private set; }
 
-        public PlayerInputController()
+        private void Awake()
         {
+            _inputSystem = new PlayerInputSystem();
             _inputSystem.Player.Enable();
             
             _inputSystem.Player.Move.performed += OnMove;
             _inputSystem.Player.Move.canceled += OnMove;
-        }
 
+        }
         private void OnMove(InputAction.CallbackContext ctx)
         {
             Move = ctx.ReadValue<Vector2>();

@@ -28,7 +28,7 @@ namespace Player
 
         private void Awake()
         {
-            _input = new PlayerInputController();
+            if (!_input) TryGetComponent(out _input);
             if (!rb) TryGetComponent(out rb);
 
             stat = new PlayerStat(statConfig);
