@@ -48,6 +48,8 @@ namespace Player
             EffectManager = new EffectManager(Stat);
             _defaultBulletPrefab = shootComponent ? shootComponent.BulletPrefab : null;
 
+            Stat.StatChanged += OnStatChanged;
+
             Current = this;
             
             // 테스트
@@ -203,6 +205,14 @@ namespace Player
             if (_defaultBulletPrefab)
             {
                 SetBulletPrefab(_defaultBulletPrefab);
+            }
+        }
+
+        private void OnStatChanged(in Stat.StatChangedEventArgs args)
+        {
+            if (args.Type == StatType.Exp)
+            {
+                Debug.Log($"Exp: {args.NewFinalValue}");
             }
         }
     }
