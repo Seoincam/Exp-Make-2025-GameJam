@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 3783996688863904971}
   - component: {fileID: 4963012792576525345}
   - component: {fileID: 2348651680078928861}
+  - component: {fileID: 1295786748533465133}
+  - component: {fileID: 6347181874924331050}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -135,10 +137,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerCharacter
   moveSpeed: 2
   rb: {fileID: 3783996688863904971}
-  statConfig: {fileID: 0}
+  statConfig: {fileID: 11400000, guid: bfd03c005b7d34ed0941da733620df13, type: 2}
   stat:
     stats: []
-  _input: {fileID: 2348651680078928861}
+  effectManager:
+    sortedEffects: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &2348651680078928861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,3 +157,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3385d7bf5f70348ef95c67b7821b15fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInputController
+  virtualJoystick: {fileID: 0}
+  shootComponent: {fileID: 0}
+--- !u!114 &1295786748533465133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2881337506349131563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a871c53434494765a3cb059872ddd6e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.ShootRangeDebugView
+  shootComponent: {fileID: 0}
+  showInGame: 1
+  segments: 64
+  lineWidth: 0.05
+  drawColor: {r: 1, g: 0, b: 0, a: 1}
+  showGizmoWhenSelected: 1
+--- !u!114 &6347181874924331050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2881337506349131563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 995efac1557f3a4428a5064cffa9e643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.ShootComponent
+  searchRadius: 10
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  bulletPrefab: {fileID: 4720526849940897613, guid: 366794d8b2ddf4347b31fa6eb31fae31, type: 3}
+  bulletSpeed: 15
+  bulletLifetime: 3
+  damage: 10
