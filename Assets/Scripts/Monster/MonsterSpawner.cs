@@ -3,10 +3,10 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// ÇÃ·¹ÀÌ¾î ±âÁØÀ¸·Î "ÀÏÁ¤ °Å¸®(»ç°¢ ¹üÀ§) ¹Û"¿¡¼­ ½ºÆù.
-/// - ¿þÀÌºê: ÃÑ spawnCountPerWave ¸¶¸®¸¦ ½ºÆù
-/// - ¹èÄ¡(¹ö½ºÆ®): spawnBatchSize ¸¶¸®¾¿ ÇÑ ¹ø¿¡ ½ºÆù, ¹èÄ¡ °£ °£°Ý spawnIntervalSeconds
-/// - ÇÁ¸®ÆÕ 3Á¾ °¡ÁßÄ¡ ·£´ý ¼±ÅÃ
+/// ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½(ï¿½ç°¢ ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½Ìºï¿½: ï¿½ï¿½ spawnCountPerWave ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+/// - ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½Æ®): spawnBatchSize ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Ä¡ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ spawnIntervalSeconds
+/// - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class WeightedOutOfRangeSpawner : MonoBehaviour
 {
@@ -17,11 +17,11 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     [Min(1)]
     [SerializeField] private int spawnCountPerWave = 12;
 
-    [Tooltip("¹èÄ¡(¹ö½ºÆ®) »çÀÌÀÇ °£°Ý(ÃÊ)")]
+    [Tooltip("ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½Æ®) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½)")]
     [Min(0f)]
     [SerializeField] private float spawnIntervalSeconds = 1f;
 
-    [Tooltip("ÇÑ ¹ø(ÇÑ ¹èÄ¡)¿¡ ¸î ¸¶¸®¸¦ µ¿½Ã¿¡ ½ºÆùÇÒÁö")]
+    [Tooltip("ï¿½ï¿½ ï¿½ï¿½(ï¿½ï¿½ ï¿½ï¿½Ä¡)ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [Min(1)]
     [SerializeField] private int spawnBatchSize = 3;
 
@@ -45,7 +45,7 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     [Range(1, 50)]
     [SerializeField] private int maxPositionTries = 15;
 
-    [Tooltip("ÇÑ ¹èÄ¡ ³»¿¡¼­ ¿©·¯ ¸¶¸®°¡ ³Ê¹« °ãÄ¡Áö ¾Ê°Ô ÃÖ¼Ò °Å¸®(0ÀÌ¸é Á¦ÇÑ ¾øÀ½)")]
+    [Tooltip("ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¹ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½Ö¼ï¿½ ï¿½Å¸ï¿½(0ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     [Min(0f)]
     [SerializeField] private float minSeparationInBatch = 0.5f;
 
@@ -98,14 +98,14 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     {
         if (player == null)
         {
-            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: Player°¡ ºñ¾îÀÖ½À´Ï´Ù.");
+            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: Playerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½Ï´ï¿½.");
             _running = null;
             yield break;
         }
 
         if (spawnAreaHalfWidthX <= noSpawnHalfWidthX || spawnAreaHalfHeightY <= noSpawnHalfHeightY)
         {
-            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: SpawnAreaHalf °ªÀº NoSpawnHalf °ªº¸´Ù Ä¿¾ß ÇÕ´Ï´Ù.");
+            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: SpawnAreaHalf ï¿½ï¿½ï¿½ï¿½ NoSpawnHalf ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä¿ï¿½ï¿½ ï¿½Õ´Ï´ï¿½.");
             _running = null;
             yield break;
         }
@@ -116,8 +116,8 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
         {
             int toSpawnThisBatch = Mathf.Min(spawnBatchSize, spawnCountPerWave - spawned);
 
-            // ¹èÄ¡ ³» °ãÄ§ ¹æÁö(¿É¼Ç)
-            // ¹èÄ¡¿¡¼­ ÀÌ¹Ì »ÌÀº À§Ä¡µé°ú ÀÏÁ¤ °Å¸® ÀÌ»ó ¶³¾îÁø À§Ä¡¸¸ Çã¿ë
+            // ï¿½ï¿½Ä¡ ï¿½ï¿½ ï¿½ï¿½Ä§ ï¿½ï¿½ï¿½ï¿½(ï¿½É¼ï¿½)
+            // ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½
             Vector3[] usedPositions = (minSeparationInBatch > 0f) ? new Vector3[toSpawnThisBatch] : null;
             int usedCount = 0;
 
@@ -136,7 +136,7 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"{nameof(WeightedOutOfRangeSpawner)}: À¯È¿ÇÑ ½ºÆù À§Ä¡¸¦ Ã£Áö ¸øÇØ 1È¸ ½ºÅµÇß½À´Ï´Ù.");
+                    Debug.LogWarning($"{nameof(WeightedOutOfRangeSpawner)}: ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1È¸ ï¿½ï¿½Åµï¿½ß½ï¿½ï¿½Ï´ï¿½.");
                 }
             }
 
