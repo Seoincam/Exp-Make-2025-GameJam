@@ -3,7 +3,7 @@ using UnityEngine;
 
 public sealed class MonsterAnimationHub : MonoBehaviour
 {
-    [Tooltip("¸í½ÃÇÏÁö ¾ÊÀ¸¸é ÀÚ½ÄµéÀÇ AnimationPlayerBase¸¦ ÀÚµ¿ ¼öÁıÇÕ´Ï´Ù.")]
+    [Tooltip("ëª…ì‹œí•˜ì§€ ì•Šìœ¼ë©´ ìì‹ë“¤ì˜ AnimationPlayerBaseë¥¼ ìë™ ìˆ˜ì§‘í•©ë‹ˆë‹¤.")]
     [SerializeField] private AnimationPlayerBase[] players;
 
     void Awake()
@@ -12,12 +12,12 @@ public sealed class MonsterAnimationHub : MonoBehaviour
             players = GetComponentsInChildren<AnimationPlayerBase>(true);
     }
 
-    /// ¸ğµç »óÅÂ Enter¿¡¼­ ÀÌ ÇÑ ÁÙ¸¸ È£ÃâÇÏ¸é µË´Ï´Ù.
+    /// ëª¨ë“  ìƒíƒœ Enterì—ì„œ ì´ í•œ ì¤„ë§Œ í˜¸ì¶œí•˜ë©´ ë©ë‹ˆë‹¤.
     public void SetTag(MonsterStateTag tag, MonsterContext ctx)
     {
         if (players == null) return;
 
-        // È°¼º & È£È¯µÇ´Â ÇÃ·¹ÀÌ¾îµé¿¡°Ô Àü´Ş
+        // í™œì„± & í˜¸í™˜ë˜ëŠ” í”Œë ˆì´ì–´ë“¤ì—ê²Œ ì „ë‹¬
         for (int i = 0; i < players.Length; i++)
         {
             var p = players[i];

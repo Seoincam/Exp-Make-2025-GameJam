@@ -8,8 +8,9 @@ public class VirtualJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler,
     [Header("Joystick Components")]
     [SerializeField] private RectTransform joystickBackground; // 큰 원
     [SerializeField] private RectTransform joystickHandle;     // 작은 원
-    
-    [Header("Joystick Settings")]
+
+    [Header("Joystick Settings")] 
+    [SerializeField] private float minValue = 0.4f;
     [SerializeField] private float handleRange = 50f; // 핸들이 움직일 수 있는 최대 거리
     
     private Vector2 inputVector;
@@ -48,7 +49,19 @@ public class VirtualJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler,
             Vector2 clampedPosition = Vector2.ClampMagnitude(position, handleRange);
             
             // 정규화된 입력 벡터 계산 (-1 ~ 1 범위, magnitude는 0 ~ 1)
-            inputVector = clampedPosition / handleRange;
+            var normalizedInput = clampedPosition / handleRange;
+            var inputMagnitude = normalizedInput.magnitude;
+
+            if (inputMagnitude > 0f)
+            {
+                var clampedMinValue = Mathf.Clamp01(minValue);
+                var scaledMagnitude = Mathf.Lerp(clampedMinValue, 1f, inputMagnitude);
+                inputVector = normalizedInput.normalized * scaledMagnitude;
+            }
+            else
+            {
+                inputVector = Vector2.zero;
+            }
             
             // 핸들 위치 업데이트
             joystickHandle.anchoredPosition = clampedPosition;
