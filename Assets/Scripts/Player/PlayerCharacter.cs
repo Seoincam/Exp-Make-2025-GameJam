@@ -69,7 +69,7 @@ namespace Player
 
         public void Damage(DamageInfo damageInfo)
         {
-            var amount = damageInfo.Damage;
+            int appliedDamageInt = Mathf.CeilToInt(damageInfo.Damage);
 
             if (Stat == null)
             {
@@ -77,11 +77,12 @@ namespace Player
                 return;
             }
 
-            if (amount <= 0f)
+            if (appliedDamageInt <= 0)
             {
                 return;
             }
 
+            float amount = appliedDamageInt;
             var currentHp = Stat.GetBaseValue(StatType.Health);
             var nextHp = Mathf.Max(0f, currentHp - amount);
             Stat.SetBaseValue(StatType.Health, nextHp);

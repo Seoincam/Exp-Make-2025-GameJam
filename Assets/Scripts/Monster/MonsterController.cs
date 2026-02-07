@@ -28,6 +28,9 @@ public class MonsterController : MonoBehaviour, IDamagable
     [SerializeField] Stat stat;
     [SerializeField] EffectManager effectManager;
 
+    [Header("=== Damage Debug ===")]
+    [SerializeField] bool logDamageReceived = true;
+
 
     float _nextContactDamageTime;
     bool _isTouchingPlayer;
@@ -223,13 +226,23 @@ public class MonsterController : MonoBehaviour, IDamagable
         if (_killed || !_initialized || stat == null)
             return;
 
-        float dmg = Mathf.Max(0f, damageInfo.Damage);
-        if (dmg <= 0f)
+        int appliedDamageInt = Mathf.CeilToInt(damageInfo.Damage);
+        if (appliedDamageInt <= 0)
             return;
 
-        float nextHp = Mathf.Max(0f, stat.GetBaseValue(StatType.Health) - dmg);
+        float dmg = appliedDamageInt;
+        float prevHp = stat.GetBaseValue(StatType.Health);
+        float nextHp = Mathf.Max(0f, prevHp - dmg);
         stat.SetBaseValue(StatType.Health, nextHp);
         stat.ApplyPendingChanges();
+
+        this.ShowDamagePopup(appliedDamageInt);
+
+        if (logDamageReceived)
+        {
+            string sourceName = damageInfo.Source ? damageInfo.Source.name : "Unknown";
+            Debug.Log($"[MonsterDamage][{name}] -{appliedDamageInt} from={sourceName} type={damageInfo.DamageType} flags={damageInfo.EffectFlags} HP {prevHp:0.##}->{nextHp:0.##}");
+        }
 
         OnDamaged?.Invoke(dmg);
 
