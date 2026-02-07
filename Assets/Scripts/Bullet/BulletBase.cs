@@ -24,19 +24,19 @@ namespace Combat.Shoot
             MaxDistanceFromOwner = maxDistanceFromOwner;
         }
 
-        protected virtual void Update()
+        protected virtual void FixedUpdate()
         {
             if (Owner)
             {
                 float distanceToOwner = Vector2.Distance(transform.position, Owner.transform.position);
                 if (distanceToOwner > MaxDistanceFromOwner)
                 {
-                    Destroy(gameObject);
+                    ReturnToPool();
                     return;
                 }
             }
 
-            TickMovement(Time.deltaTime);
+            TickMovement(Time.fixedDeltaTime);
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -45,8 +45,13 @@ namespace Combat.Shoot
             {
                 return;
             }
-
+            
             OnHit(other);
+        }
+
+        public void ReturnToPool()
+        {
+            BulletPool.Return(this);
         }
 
         protected abstract void TickMovement(float deltaTime);

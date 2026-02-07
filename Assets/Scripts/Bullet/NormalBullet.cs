@@ -48,7 +48,7 @@ namespace Combat.Shoot
                 Owner,
                 EDamageType.Normal));
 
-            Destroy(gameObject);
+            ReturnToPool();
         }
     }
 }

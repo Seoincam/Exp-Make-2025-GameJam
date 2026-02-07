@@ -69,21 +69,13 @@ namespace Combat.Shoot
                 return null;
             }
 
-            Vector2 direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            GameObject bullet = Instantiate(
-                bulletPrefab,
-                transform.position,
-                Quaternion.Euler(0, 0, angle)
-            );
-
-            if (bullet.TryGetComponent<BulletBase>(out var bulletComp))
+            var bulletComp = BulletPool.Spawn(bulletPrefab, transform.position, Quaternion.identity);
+            if (bulletComp)
             {
                 bulletComp.Init(target, bulletSpeed, damage, gameObject, bulletMaxDistance);
             }
 
-            return bullet;
+            return bulletComp ? bulletComp.gameObject : null;
         }
 
         public void Fire()
