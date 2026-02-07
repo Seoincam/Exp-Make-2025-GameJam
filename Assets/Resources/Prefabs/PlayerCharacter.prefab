@@ -201,6 +201,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   bulletPrefab: {fileID: 4720526849940897613, guid: 366794d8b2ddf4347b31fa6eb31fae31, type: 3}
+  animator: {fileID: 2272865104564081299}
 --- !u!95 &2272865104564081299
 Animator:
   serializedVersion: 7
