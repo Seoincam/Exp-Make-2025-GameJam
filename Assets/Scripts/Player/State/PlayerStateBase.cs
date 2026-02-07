@@ -35,19 +35,15 @@ namespace Player.State
     public abstract class PlayerStateBase
     {
         protected IEntity Entity;
-
-        protected Effect.EffectSpec DamageEffectSpec;
         
         public PlayerState StateType { get; protected set; }
         
+        public bool EndRequested { get; protected set; }
         
         public PlayerStateBase(IEntity entity)
         {
             Entity = entity;
-            
-            DamageEffectSpec = Effect
-                .CreateSpec(EffectType.Damage)
-                .SetOrder(EffectOrder.Early);
+            entity.Stat.StatChanged += OnStatChanged;
         }
 
         public abstract void OnEnter();
@@ -57,5 +53,13 @@ namespace Player.State
         public abstract void OnExit();
 
         public abstract void OnDamage(DamageInfo damageInfo);
+
+        public virtual void OnStatChanged(in Stat.StatChangedEventArgs args)
+        {
+            if (args.NewFinalValue <= 0.001f)
+            {
+                EndRequested = true;
+            }
+        }
     }
 }

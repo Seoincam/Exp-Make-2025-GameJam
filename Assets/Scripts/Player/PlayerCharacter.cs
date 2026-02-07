@@ -52,7 +52,17 @@ namespace Player
             rb.linearVelocity = MoveInput;
             
             var deltaTime = Time.fixedDeltaTime;
-            _currentState?.OnTick(deltaTime);
+
+            if (_currentState != null)
+            {
+                _currentState.OnTick(deltaTime);
+                
+                if (_currentState.EndRequested)
+                {
+                    _currentState.OnExit();
+                    _currentState = null;
+                }
+            }
             EffectManager.Tick(deltaTime);
         }
 

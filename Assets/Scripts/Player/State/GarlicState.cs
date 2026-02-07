@@ -1,5 +1,6 @@
 using Combat.Shoot;
 using Shared.Stat;
+using UnityEngine;
 
 namespace Player.State
 {
@@ -30,6 +31,13 @@ namespace Player.State
                 .AddHandler(new InstantStatHandler(StatType.GarlicBullet, damageInfo.Damage));
 
             Entity.EffectManager.AddEffect(spec);
+        }
+
+        public override void OnStatChanged(in Stat.StatChangedEventArgs args)
+        {
+            if (args.Type != StatType.GarlicBullet) return;
+
+            base.OnStatChanged(args);
         }
     }
 }

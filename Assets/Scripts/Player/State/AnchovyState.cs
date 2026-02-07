@@ -1,5 +1,6 @@
 using Combat.Shoot;
 using Shared.Stat;
+using UnityEngine;
 
 namespace Player.State
 {
@@ -39,6 +40,13 @@ namespace Player.State
                 .SetOrder(EffectOrder.Early)
                 .AddHandler(new InstantStatHandler(StatType.AnchovyBullet, damageInfo.Damage));
             Entity.EffectManager.AddEffect(spec);
+        }
+
+        public override void OnStatChanged(in Stat.StatChangedEventArgs args)
+        {
+            if (args.Type != StatType.AnchovyBullet) return;
+
+            base.OnStatChanged(args);
         }
     }
 }
