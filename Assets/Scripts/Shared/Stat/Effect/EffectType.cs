@@ -9,7 +9,12 @@ namespace Shared.Stat
         Burn,
         
         /// <summary>
-        /// 무기 '마늘' 착용 시, 플레이어 주변에 광역 데미지 제공.
+        /// 상대로부터 데미지를 받는 효과를 나타냄.
+        /// </summary>
+        Damage,
+        
+        /// <summary>
+        /// 무기 '마늘' 착용 시, 플레이어 주변에 광역 데미지 제공하는 효과를 나타냄.
         /// </summary>
         GarlicAreaDamage,
     }

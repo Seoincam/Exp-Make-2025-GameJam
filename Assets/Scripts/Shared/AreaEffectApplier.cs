@@ -15,11 +15,16 @@ namespace Combat.Shoot
 
         private Effect.EffectSpec _spec;
 
-        private void Awake()
+        // private void Awake()
+        // {
+        //     _spec = Effect.CreateSpec(EffectType.GarlicAreaDamage)
+        //         .SetUnique()
+        //         .AddHandler(new PeriodicStatHandler(StatType.Health, 0.3f, 0.5f));
+        // }
+
+        public void Initialize(Effect.EffectSpec effectSpec)
         {
-            _spec = Effect.CreateSpec(EffectType.GarlicAreaDamage)
-                .SetUnique()
-                .AddHandler(new PeriodicStatHandler(StatType.Health, 0.3f, 0.5f));
+            _spec = effectSpec;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

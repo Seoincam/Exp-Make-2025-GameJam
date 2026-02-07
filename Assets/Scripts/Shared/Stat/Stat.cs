@@ -8,10 +8,38 @@ namespace Shared.Stat
 {
     public enum StatType
     {
+        // Common
         Level,
         Health,
         MoveSpeed,
         FireInterval,
+        
+        // Player
+        
+        /// <summary>
+        /// 멸치 탄알.
+        /// </summary>
+        AnchovyBullet,
+        
+        /// <summary>
+        /// 날치알 탄알.
+        /// </summary>
+        FlyingFishRoeBullet,
+        
+        /// <summary>
+        /// 소시지 탄알.
+        /// </summary>
+        SausageBullet,
+        
+        /// <summary>
+        /// 마늘 탄알.
+        /// </summary>
+        GarlicBullet,
+        
+        /// <summary>
+        /// 고추 참치 탄알.
+        /// </summary>
+        ChiliPepperAndTunaBullet
     }
 
     public delegate void StatChangedAction(in Stat.StatChangedEventArgs args);

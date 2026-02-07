@@ -1,6 +1,6 @@
 using Combat.Shoot;
 using Shared.Stat;
-using Combat.Shoot;
+using Player.State;
 using UnityEngine;
 
 namespace Player
@@ -25,6 +25,8 @@ namespace Player
         private PlayerInputController _input;
 
         private Vector2 MoveInput => _input.Move * GetCurrentMoveSpeed();
+
+        private PlayerStateBase _currentState;
 
         private void Reset()
         {
@@ -52,7 +54,10 @@ namespace Player
         private void FixedUpdate()
         {
             rb.linearVelocity = MoveInput;
-            EffectManager.Tick(Time.fixedDeltaTime);
+            
+            var deltaTime = Time.fixedDeltaTime;
+            _currentState?.OnTick(deltaTime);
+            EffectManager.Tick(deltaTime);
         }
 
         private float GetCurrentMoveSpeed()
@@ -69,23 +74,25 @@ namespace Player
 
         public void Damage(DamageInfo damageInfo)
         {
-            var amount = damageInfo.Damage;
-
             if (Stat == null)
             {
                 Debug.LogWarning($"{nameof(PlayerCharacter)} on {name} has no stat instance.");
                 return;
             }
 
+            var amount = damageInfo.Damage;
             if (amount <= 0f)
             {
                 return;
             }
 
-            var currentHp = Stat.GetBaseValue(StatType.Health);
-            var nextHp = Mathf.Max(0f, currentHp - amount);
-            Stat.SetBaseValue(StatType.Health, nextHp);
-            Stat.ApplyPendingChanges();
+            // TODO: 병목된다면.. 이펙트 풀링
+            var damageEffectSpec = Effect.CreateSpec(EffectType.Damage)
+                .SetUnique(false)
+                .AddHandler(new InstantStatHandler(StatType.Health, -amount));
+            EffectManager.AddEffect(damageEffectSpec);
+            
+            _currentState?.OnDamage(damageInfo);
         }
     }
 }
