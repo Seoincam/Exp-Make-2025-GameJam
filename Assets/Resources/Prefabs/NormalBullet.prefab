@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 5185711496839008058}
   - component: {fileID: 5231073267217845986}
   - component: {fileID: 920216471686659782}
+  - component: {fileID: 5529231392165617996}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: NormalBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,3 +105,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac81f08c4ed5c8478d64e0f645aa17a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.NormalBullet
+  enableDebugLogs: 1
+--- !u!58 &5529231392165617996
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4720526849940897613}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.5

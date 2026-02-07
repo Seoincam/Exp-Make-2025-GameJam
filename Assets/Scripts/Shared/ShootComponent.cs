@@ -23,6 +23,11 @@ namespace Combat.Shoot
 
         public float SearchRadius => searchRadius;
 
+        public bool IsCurrentBullet<TBullet>() where TBullet : BulletBase
+        {
+            return bulletPrefab && bulletPrefab.GetComponent<TBullet>() != null;
+        }
+
         private void Awake()
         {
             if (!TryGetComponent<ShootRangeDebugView>(out _))
