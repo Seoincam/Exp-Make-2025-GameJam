@@ -39,8 +39,10 @@ namespace Player
             rb.linearVelocity = MoveInput;
         }
 
-        public void Damage(float amount)
+        public void Damage(DamageInfo damageInfo)
         {
+            var amount = damageInfo.Damage;
+
             if (stat == null)
             {
                 Debug.LogWarning($"{nameof(PlayerCharacter)} on {name} has no stat instance.");

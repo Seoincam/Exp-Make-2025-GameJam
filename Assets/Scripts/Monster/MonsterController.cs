@@ -142,24 +142,24 @@ public class MonsterController : MonoBehaviour, IDamagable
     }
     #endregion
     // 외부에서 데미지
-    // 기존 시그니처 보존
-    public void TakeDamage(float dmg) => TakeDamage(dmg, 0f);
-
-    public void Damage(float amount)
+    public void Damage(DamageInfo damageInfo)
     {
-        TakeDamage(amount);
+        TakeDamage(damageInfo);
     }
 
-    // 새 시그니처 스턴 지속시간 포함
-    public void TakeDamage(float dmg, float stunSec)
+    public void TakeDamage(DamageInfo damageInfo)
     {
+        var dmg = damageInfo.Damage;
+        var sourceName = damageInfo.Source ? damageInfo.Source.name : "Unknown";
+        var damageType = damageInfo.DamageType;
+
         if (_killed)
             return;
         ctx.hp = Mathf.Max(0, ctx.hp - dmg);
         CurrentHP = ctx.hp;
         OnHpChanged?.Invoke(CurrentHP, MaxHP);
         OnDamaged?.Invoke(dmg);
-        Debug.Log($"{monster_Id} 몬스터에게 {dmg} 피해! (stun={stunSec:F2}s)");
+        Debug.Log($"{monster_Id} 몬스터에게 {dmg} 피해! (type={damageType}, source={sourceName})");
 
         /*
         string sfxName = null;
