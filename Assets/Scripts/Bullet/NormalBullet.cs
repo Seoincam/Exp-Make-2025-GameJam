@@ -38,17 +38,27 @@ namespace Combat.Shoot
 
         protected override void OnHit(Collider2D other)
         {
-            if (!other.TryGetComponent<IDamagable>(out var damageable))
+            IDamagable damageable = other.GetComponent<IDamagable>();
+            if (damageable == null)
             {
+                damageable = other.GetComponentInParent<IDamagable>();
+            }
+
+            if (damageable != null)
+            {
+                damageable.Damage(new DamageInfo(
+                    Damage,
+                    Owner,
+                    EDamageType.Normal));
+
+                ReturnToPool("HitDamageable");
                 return;
             }
 
-            damageable.Damage(new DamageInfo(
-                Damage,
-                Owner,
-                EDamageType.Normal));
-
-            ReturnToPool();
+            if (other.GetComponentInParent<MonsterController>() != null)
+            {
+                ReturnToPool("HitMonsterWithoutIDamagable");
+            }
         }
     }
 }
