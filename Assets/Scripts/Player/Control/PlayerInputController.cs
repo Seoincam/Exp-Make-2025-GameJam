@@ -63,7 +63,6 @@ namespace Player
 
             if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
-                Debug.Log("Fire input: Space");
                 shootComponent?.Fire();
             }
         }

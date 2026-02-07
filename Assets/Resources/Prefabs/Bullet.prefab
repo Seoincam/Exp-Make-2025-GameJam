@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5185711496839008058}
   - component: {fileID: 5231073267217845986}
-  - component: {fileID: 3732560792632571743}
+  - component: {fileID: 920216471686659782}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -92,7 +92,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &3732560792632571743
+--- !u!114 &920216471686659782
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,6 +101,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4720526849940897613}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb682272042252e47949aa100cc82e67, type: 3}
+  m_Script: {fileID: 11500000, guid: 2ac81f08c4ed5c8478d64e0f645aa17a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.Bullet
+  m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.NormalBullet

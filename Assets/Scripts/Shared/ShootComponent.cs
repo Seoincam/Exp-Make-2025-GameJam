@@ -18,7 +18,7 @@ namespace Combat.Shoot
         [Header("Bullet")]
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float bulletSpeed = 15f;
-        [SerializeField] private float bulletLifetime = 3f;
+        [SerializeField] private float bulletMaxDistance = 20f;
         [SerializeField] private float damage = 10f;
 
         public float SearchRadius => searchRadius;
@@ -66,7 +66,6 @@ namespace Combat.Shoot
             Transform target = FindClosestEnemy();
             if (target == null)
             {
-                Debug.Log("ShootComponent: no target in range.");
                 return null;
             }
 
@@ -79,19 +78,16 @@ namespace Combat.Shoot
                 Quaternion.Euler(0, 0, angle)
             );
 
-            if (bullet.TryGetComponent<Bullet>(out var bulletComp))
+            if (bullet.TryGetComponent<BulletBase>(out var bulletComp))
             {
-                bulletComp.Init(direction, bulletSpeed, bulletLifetime, damage, gameObject);
+                bulletComp.Init(target, bulletSpeed, damage, gameObject, bulletMaxDistance);
             }
-
-            Debug.Log($"ShootComponent: fired bullet to {target.name}");
 
             return bullet;
         }
 
         public void Fire()
         {
-            Debug.Log("ShootComponent: fire requested.");
             FireAtClosestEnemy();
         }
     }
