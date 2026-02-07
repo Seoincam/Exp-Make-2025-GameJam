@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Shared.Stat
 {
@@ -12,6 +13,8 @@ namespace Shared.Stat
         MoveSpeed,
         FireInterval,
     }
+
+    public delegate void StatChangedAction(in Stat.StatChangedEventArgs args);
     
     [Serializable]
     public class Stat
@@ -20,8 +23,13 @@ namespace Shared.Stat
         [SerializeField] private List<StatEntry> stats = new();
         
         private Dictionary<StatType, StatEntry> _statCache = new();
+        private Dictionary<StatType, PendingChange> _pendingChanges = new();
+
+        private Dictionary<StatType, int> _statIndexCache = new();
         
         public IReadOnlyList<StatType> AllStatTypes { get; }
+
+        public event StatChangedAction StatChanged;
 
         public Stat(InitialStatConfig config)
         {
@@ -44,6 +52,8 @@ namespace Shared.Stat
                 stats.Add(statEntry);
                 _statCache.Add(configEntry.Type, statEntry);
                 allStatTypes.Add(configEntry.Type);
+                
+                _statIndexCache.Add(statEntry.type, stats.IndexOf(statEntry));
             }
 
             AllStatTypes = allStatTypes.ToList();
@@ -55,6 +65,36 @@ namespace Shared.Stat
             public StatType type;
             public float baseValue;
             public float finalValue;
+        }
+
+        [Serializable]
+        private class PendingChange
+        {
+            private float _newBaseValue;
+            private float _newFinalValue;
+
+            public float NewBaseValue
+            {
+                get => _newBaseValue;
+                set
+                {
+                    _newBaseValue = value;
+                    BaseValueChanged = true;
+                }
+            }
+
+            public float NewFinalValue
+            {
+                get => _newFinalValue;
+                set
+                {
+                    _newFinalValue = value;
+                    FinalValueChanged = true;
+                }
+            }
+            
+            public bool BaseValueChanged { get; private set; }
+            public bool FinalValueChanged { get; private set; }
         }
         
         public float GetBaseValue(StatType statType)
@@ -79,66 +119,117 @@ namespace Shared.Stat
             return 0;
         }
 
+        /// <summary>
+        /// <c>BaseValue</c> 설정을 예약함.
+        /// </summary>
         public void SetBaseValue(StatType statType, float value)
         {
-            if (_statCache.TryGetValue(statType, out var entry))
+            if (!_pendingChanges.TryGetValue(statType, out var pendingChange))
             {
-                entry.baseValue = value;
-                return;
+                pendingChange = new PendingChange();
+                _pendingChanges.Add(statType, pendingChange);
             }
-            
-            LogWarning(WarningType.InvalidType, nameof(statType));
-        }
 
-        public void SetFinalValue(StatType statType, float value)
-        {
-            if (_statCache.TryGetValue(statType, out var entry))
-            {
-                entry.finalValue = value;
-                return;
-            }
-            
-            LogWarning(WarningType.InvalidType, nameof(statType));
+            pendingChange.NewBaseValue = value;
         }
         
         /// <summary>
-        /// <c>BaseValue</c> += <c>delta</c>
+        /// <c>BaseValue</c> += <c>delta</c>를 예약함.
         /// </summary>
         public void ModifyBaseValue(StatType statType, float delta)
         {
-            if (_statCache.TryGetValue(statType, out var entry))
+            if (_pendingChanges.TryGetValue(statType, out var pendingChange))
             {
-                entry.baseValue += delta;
-                return;
+                pendingChange.NewBaseValue += delta;
             }
-            
-            LogWarning(WarningType.InvalidType, nameof(statType));
+            else
+            {
+                pendingChange = new PendingChange();
+                pendingChange.NewBaseValue = GetBaseValue(statType) + delta;
+                _pendingChanges.Add(statType, pendingChange);
+            }
         }
 
         /// <summary>
-        /// <c>FinalValue</c> += <c>delta</c>
+        /// <c>FinalValue</c> 설정을 예약함.
         /// </summary>
-        public void ModifyFinalValue(StatType statType, float delta)
+        /// <param name="statType"></param>
+        /// <param name="value"></param>
+        public void SetFinalValue(StatType statType, float value)
         {
-            if (_statCache.TryGetValue(statType, out var entry))
+            if (!_pendingChanges.TryGetValue(statType, out var pendingChange))
             {
-                entry.finalValue += delta;
-                return;
+                pendingChange = new PendingChange();
+                _pendingChanges.Add(statType, pendingChange);
             }
-            
-            LogWarning(WarningType.InvalidType, nameof(statType));
+
+            pendingChange.NewFinalValue = value;
         }
 
+        public void ApplyPendingChanges()
+        {
+            using var _ = ListPool<StatChangedEventArgs>.Get(out var eventArgs);
+            
+            foreach (var (statType, pendingChange) in _pendingChanges)
+            {
+                var entryIndex = _statIndexCache[statType];
+                var entry = stats[entryIndex];
+                
+                var oldBaseValue = entry.baseValue;
+                var oldFinalValue = entry.finalValue;
+                
+                if (pendingChange.BaseValueChanged)
+                {
+                    entry.baseValue = pendingChange.NewBaseValue;
+                }
+                if (pendingChange.FinalValueChanged)
+                {
+                    entry.finalValue = pendingChange.NewFinalValue;
+                }
+                
+                if (pendingChange.BaseValueChanged || pendingChange.FinalValueChanged)
+                {
+                    eventArgs.Add(new StatChangedEventArgs(oldBaseValue, entry.baseValue, oldFinalValue, entry.finalValue));
+                }
+            }
+
+            foreach (var changeEvent in eventArgs)
+            {
+                StatChanged?.Invoke(in changeEvent);
+            }
+        }
+        
         private enum WarningType
         {
             InvalidType
         }
 
-        private void LogWarning(WarningType type, string message)
+        private static void LogWarning(WarningType type, string message)
         {
             switch (type)
             {
                 case WarningType.InvalidType: Debug.LogWarning(message + " 타입의 스탯이 존재하지 않습니다."); break;
+            }
+        }
+        
+        public struct StatChangedEventArgs
+        {
+            public float OldBaseValue { get; }
+            public float NewBaseValue { get; }
+            
+            public float OldFinalValue { get; }
+            public float NewFinalValue { get; }
+
+            public StatChangedEventArgs(
+                float oldBaseValue, 
+                float newBaseValue, 
+                float oldFinalValue,
+                float newFinalValue)
+            {
+                OldBaseValue = oldBaseValue;
+                NewBaseValue = newBaseValue;
+                OldFinalValue = oldFinalValue;
+                NewFinalValue = newFinalValue;
             }
         }
     }
