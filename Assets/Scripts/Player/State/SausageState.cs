@@ -27,7 +27,7 @@ namespace Player.State
         {
             var spec = Effect.CreateSpec(EffectType.Damage)
                 .SetOrder(EffectOrder.Early)
-                .AddHandler(new InstantStatHandler(StatType.SausageBullet, damageInfo.Damage));
+                .AddHandler(new InstantStatHandler(StatType.SausageBullet, -damageInfo.Damage));
 
             Entity.EffectManager.AddEffect(spec);
         }

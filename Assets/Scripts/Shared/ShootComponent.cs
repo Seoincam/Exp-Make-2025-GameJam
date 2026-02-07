@@ -122,9 +122,14 @@ namespace Combat.Shoot
             return bulletComp ? bulletComp.gameObject : null;
         }
 
+        public bool TryFire()
+        {
+            return FireAtClosestEnemy() != null;
+        }
+
         public void Fire()
         {
-            FireAtClosestEnemy();
+            TryFire();
         }
 
         private float ResolveDamageFromOwner()

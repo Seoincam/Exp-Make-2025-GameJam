@@ -198,9 +198,15 @@ namespace Shared.Stat
             }
             else
             {
+                float currentBaseValue = 0f;
+                if (_statCache.TryGetValue(statType, out var entry))
+                {
+                    currentBaseValue = entry.baseValue;
+                }
+
                 pendingChange = new PendingChange
                 {
-                    NewBaseValue = GetBaseValue(statType) + delta
+                    NewBaseValue = currentBaseValue + delta
                 };
                 _pendingChanges.Add(statType, pendingChange);
             }
@@ -230,7 +236,7 @@ namespace Shared.Stat
             {
                 if (!_statIndexCache.TryGetValue(statType, out var entryIndex))
                 {
-                    continue;
+                    entryIndex = AddStatEntry(statType);
                 }
 
                 var entry = stats[entryIndex];
@@ -265,6 +271,43 @@ namespace Shared.Stat
         private enum WarningType
         {
             InvalidType
+        }
+
+        private int AddStatEntry(StatType statType)
+        {
+            if (_statIndexCache.TryGetValue(statType, out var index))
+            {
+                return index;
+            }
+
+            var statEntry = new StatEntry
+            {
+                type = statType,
+                baseValue = 0f,
+                finalValue = 0f
+            };
+
+            stats.Add(statEntry);
+            _statCache.Add(statType, statEntry);
+
+            index = stats.Count - 1;
+            _statIndexCache.Add(statType, index);
+
+            if (!AllStatTypes.Contains(statType))
+            {
+                if (AllStatTypes is List<StatType> list)
+                {
+                    list.Add(statType);
+                }
+                else
+                {
+                    var newList = AllStatTypes.ToList();
+                    newList.Add(statType);
+                    AllStatTypes = newList;
+                }
+            }
+
+            return index;
         }
 
         private static void LogWarning(WarningType type, string message)

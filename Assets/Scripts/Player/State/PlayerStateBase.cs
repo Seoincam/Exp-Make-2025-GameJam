@@ -35,6 +35,7 @@ namespace Player.State
     public abstract class PlayerStateBase
     {
         protected IEntity Entity;
+        private bool _released;
         
         public PlayerState StateType { get; protected set; }
         
@@ -43,7 +44,10 @@ namespace Player.State
         public PlayerStateBase(IEntity entity)
         {
             Entity = entity;
-            entity.Stat.StatChanged += OnStatChanged;
+            if (entity != null && entity.Stat != null)
+            {
+                entity.Stat.StatChanged += OnStatChanged;
+            }
         }
 
         public abstract void OnEnter();
@@ -56,9 +60,23 @@ namespace Player.State
 
         public virtual void OnStatChanged(in Stat.StatChangedEventArgs args)
         {
-            if (args.NewFinalValue <= 0.001f)
+            if (args.NewBaseValue <= 0.001f)
             {
                 EndRequested = true;
+            }
+        }
+
+        public void Release()
+        {
+            if (_released)
+            {
+                return;
+            }
+
+            _released = true;
+            if (Entity != null && Entity.Stat != null)
+            {
+                Entity.Stat.StatChanged -= OnStatChanged;
             }
         }
     }

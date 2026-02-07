@@ -59,11 +59,35 @@ namespace Player
                 
                 if (_currentState.EndRequested)
                 {
-                    _currentState.OnExit();
-                    _currentState = null;
+                    DisposeCurrentState();
                 }
             }
             EffectManager.Tick(deltaTime);
+        }
+
+        private void OnDestroy()
+        {
+            DisposeCurrentState();
+        }
+
+        public void ChangeState(PlayerState nextStateType, bool forceReenter = false)
+        {
+            if (!forceReenter && _currentState != null && _currentState.StateType == nextStateType)
+            {
+                return;
+            }
+
+            var nextState = CreateState(nextStateType);
+            if (nextState == null)
+            {
+                Debug.LogWarning($"Unsupported player state: {nextStateType}");
+                return;
+            }
+
+            DisposeCurrentState();
+
+            _currentState = nextState;
+            _currentState.OnEnter();
         }
 
         public void Damage(DamageInfo damageInfo)
@@ -87,6 +111,42 @@ namespace Player
             EffectManager.AddEffect(damageEffectSpec);
             
             _currentState?.OnDamage(damageInfo);
+        }
+
+        public void TakeDamage(DamageInfo damageInfo)
+        {
+            Damage(damageInfo);
+        }
+
+        private PlayerStateBase CreateState(PlayerState stateType)
+        {
+            switch (stateType)
+            {
+                case PlayerState.Anchovy:
+                    return new AnchovyState(this);
+                case PlayerState.FlyingFishRoe:
+                    return new FlyingFishRoeState(this);
+                case PlayerState.Sausage:
+                    return new SausageState(this);
+                case PlayerState.Garlic:
+                    return new GarlicState(this);
+                case PlayerState.ChiliPepperAndTuna:
+                    return new ChiliPepperAndTunaState(this);
+                default:
+                    return null;
+            }
+        }
+
+        private void DisposeCurrentState()
+        {
+            if (_currentState == null)
+            {
+                return;
+            }
+
+            _currentState.OnExit();
+            _currentState.Release();
+            _currentState = null;
         }
     }
 }

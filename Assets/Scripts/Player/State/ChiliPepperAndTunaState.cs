@@ -28,7 +28,7 @@ namespace Player.State
         {
             var spec = Effect.CreateSpec(EffectType.Damage)
                 .SetOrder(EffectOrder.Early)
-                .AddHandler(new InstantStatHandler(StatType.ChiliPepperAndTunaBullet, damageInfo.Damage));
+                .AddHandler(new InstantStatHandler(StatType.ChiliPepperAndTunaBullet, -damageInfo.Damage));
             
             Entity.EffectManager.AddEffect(spec);
         }
