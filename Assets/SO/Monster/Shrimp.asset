@@ -18,7 +18,7 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackRange: 0
   pixelsPerUnit: 16
-  moveSpeedPixelsPerSec: 20
+  moveSpeedPixelsPerSec: 10
   attackEnterDistance: 0
   attackExitDistance: 3
   combatMoveBehaviours: []
@@ -36,3 +36,8 @@ MonoBehaviour:
   contactDamage: 5
   contactDamageInterval: 0.5
   contactDamageByRange: 1
+  minMonsterDistance: 1
+  minPlayerDistance: 1.2
+  monsterLayer:
+    serializedVersion: 2
+    m_Bits: 64

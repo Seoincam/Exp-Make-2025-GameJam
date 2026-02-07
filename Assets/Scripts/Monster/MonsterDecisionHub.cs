@@ -26,7 +26,7 @@ public sealed class MonsterDecisionHub
     public Route Decide(float dt)
     {
 
-
+        if (ctx.MoveLocked) return Route.None;
 
         return Route.None; // Idle À¯Áö
     }

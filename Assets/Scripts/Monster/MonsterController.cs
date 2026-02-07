@@ -1,6 +1,7 @@
 using Shared.Stat;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator), typeof(SpriteRenderer))]
@@ -42,7 +43,11 @@ public class MonsterController : MonoBehaviour, IDamagable
     public Animator Animator { get; private set; }
     public SpriteRenderer Sprite { get; private set; }
     public Transform Player { get; private set; }
+    public AttackTelegraphRect Telegraph { get; private set; }
     public MonsterStateMachine StateMachine => root;
+
+    Dictionary<object, float> _moveSpeedMultipliersBySource;
+    float _cachedFieldMultiplier = 1f;
 
     public float MaxHP { get; private set; }
     public float CurrentHP { get; private set; }
@@ -138,7 +143,11 @@ public class MonsterController : MonoBehaviour, IDamagable
         CurrentHP = initialHp;
         OnHpChanged?.Invoke(CurrentHP, MaxHP);
     }
-
+    public void EnsureTelegraph()
+    {
+        if (Telegraph == null) Telegraph = new AttackTelegraphRect();
+        Telegraph.Ensure($"{name}_Telegraph", sortingOrder: 1000);
+    }
     void OnDisable()
     {
         _initialized = false;
@@ -147,6 +156,7 @@ public class MonsterController : MonoBehaviour, IDamagable
             StopCoroutine(_deathCo);
             _deathCo = null;
         }
+        Telegraph?.Hide();
     }
 
     void Update()
@@ -380,4 +390,35 @@ public class MonsterController : MonoBehaviour, IDamagable
             _isTouchingPlayer = false;
         }
     }
+
+    public void AddMoveSpeedMultiplierBuff(object source, float multiplier)
+    {
+        if (source == null) return;
+        multiplier = Mathf.Max(0f, multiplier);
+
+        _moveSpeedMultipliersBySource ??= new Dictionary<object, float>();
+        _moveSpeedMultipliersBySource[source] = multiplier;
+
+        RecomputeMoveSpeedMultiplier();
+    }
+
+    public void RemoveMoveSpeedMultiplierBuff(object source)
+    {
+        if (_moveSpeedMultipliersBySource == null) return;
+        if (!_moveSpeedMultipliersBySource.Remove(source)) return;
+
+        RecomputeMoveSpeedMultiplier();
+    }
+
+    void RecomputeMoveSpeedMultiplier()
+    {
+        float total = 1f;
+        if (_moveSpeedMultipliersBySource != null)
+        {
+            foreach (var kv in _moveSpeedMultipliersBySource)
+                total *= kv.Value; // 여러 장판 겹치면 곱(원하면 합산으로 바꿀 수도 있음)
+        }
+        _cachedFieldMultiplier = total;
+    }
+
 }

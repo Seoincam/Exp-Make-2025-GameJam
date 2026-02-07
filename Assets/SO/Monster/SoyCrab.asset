@@ -18,16 +18,18 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackRange: 1.2
   pixelsPerUnit: 16
-  moveSpeedPixelsPerSec: 40
+  moveSpeedPixelsPerSec: 10
   attackEnterDistance: 2.2
   attackExitDistance: 3
   combatMoveBehaviours: []
-  combatAttackBehaviours: []
+  combatAttackBehaviours:
+  - {fileID: 11400000, guid: eea09efaf8a99434cb021837109657bf, type: 2}
+  - {fileID: 11400000, guid: 803a24c7fc76a5f48a8b3482dd760fa2, type: 2}
   moveWeights:
   - 60
   - 25
   - 15
-  category: 4
+  category: 3
   defaultHitStunSeconds: 0.3
   dropCurrencyAmount: 0
   currencyDropPrefab: {fileID: 0}
@@ -36,3 +38,8 @@ MonoBehaviour:
   contactDamage: 5
   contactDamageInterval: 0.5
   contactDamageByRange: 1
+  minMonsterDistance: 1
+  minPlayerDistance: 1.2
+  monsterLayer:
+    serializedVersion: 2
+    m_Bits: 64

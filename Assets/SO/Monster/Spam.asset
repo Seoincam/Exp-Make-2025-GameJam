@@ -18,12 +18,13 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackRange: 1.2
   pixelsPerUnit: 16
-  moveSpeedPixelsPerSec: 40
+  moveSpeedPixelsPerSec: 10
   attackEnterDistance: 3
   attackExitDistance: 3
   combatMoveBehaviours: []
   combatAttackBehaviours:
   - {fileID: 11400000, guid: 36101de6bffb24b45ab58931f1b4413b, type: 2}
+  - {fileID: 11400000, guid: 4a60eec5d2beef94d91599eec54695d3, type: 2}
   moveWeights:
   - 60
   - 25
@@ -37,3 +38,8 @@ MonoBehaviour:
   contactDamage: 5
   contactDamageInterval: 0.5
   contactDamageByRange: 1
+  minMonsterDistance: 1
+  minPlayerDistance: 1.2
+  monsterLayer:
+    serializedVersion: 2
+    m_Bits: 64
