@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Shared.Stat
@@ -19,9 +20,12 @@ namespace Shared.Stat
         [SerializeField] private List<StatEntry> stats = new();
         
         private Dictionary<StatType, StatEntry> _statCache = new();
+        
+        public IReadOnlyList<StatType> AllStatTypes { get; }
 
         public Stat(InitialStatConfig config)
         {
+            var allStatTypes = new HashSet<StatType>();
             foreach (var configEntry in config.Entries)
             {
                 if (_statCache.ContainsKey(configEntry.Type))
@@ -39,7 +43,10 @@ namespace Shared.Stat
                 
                 stats.Add(statEntry);
                 _statCache.Add(configEntry.Type, statEntry);
+                allStatTypes.Add(configEntry.Type);
             }
+
+            AllStatTypes = allStatTypes.ToList();
         }
         
         [Serializable]

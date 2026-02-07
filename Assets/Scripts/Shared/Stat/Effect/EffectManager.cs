@@ -57,7 +57,7 @@ namespace Shared.Stat
                 RemoveEffect(instanceId);
             }
             
-            ApplyModifiers();
+            CalculateFinalValues();
             
             // TODO: 필요하다면 변경된거 이벤트 발행
         }
@@ -138,19 +138,23 @@ namespace Shared.Stat
             _needSortEffects = true;
         }
         
-        private void ApplyModifiers()
+        private void CalculateFinalValues()
         {
-            foreach (var (statType, list) in _sortedModifiers)
+            foreach (var statType in _stat.AllStatTypes)
             {
                 var baseValue = _stat.GetBaseValue(statType);
+                _stat.SetFinalValue(statType, baseValue);
                 var finalValue = _stat.GetFinalValue(statType);
+
+                if (_sortedModifiers.TryGetValue(statType, out var list))
+                {
+                    foreach (var modifier in list)
+                    { 
+                        finalValue = modifier.Apply(baseValue, finalValue);
+                    }
                 
-                foreach (var modifier in list)
-                { 
-                    finalValue = modifier.Apply(baseValue, finalValue);
+                    _stat.SetFinalValue(statType, finalValue);
                 }
-                
-                _stat.SetFinalValue(statType, finalValue);
             }
         }
 
@@ -172,6 +176,7 @@ namespace Shared.Stat
                 if (!_sortedModifiers.TryGetValue(modifier.StatType, out var list))
                 {
                     list = new List<TemporaryModifier>();
+                    _sortedModifiers.Add(modifier.StatType, list);
                 }
                 list.Add(modifier);
             }
