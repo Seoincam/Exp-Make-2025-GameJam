@@ -1,4 +1,3 @@
-using System;
 using Combat.Shoot;
 using Shared.Stat;
 using UnityEngine;
@@ -24,13 +23,6 @@ namespace DamageArea
         [Header("States")]
         [SerializeField] private float timer;
         [SerializeField] private float elapsed;
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            
-        }
-#endif
 
         private void FixedUpdate()
         {
