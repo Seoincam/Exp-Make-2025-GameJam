@@ -142,6 +142,7 @@ MonoBehaviour:
   shootComponent: {fileID: 6347181874924331050}
   animator: {fileID: 2272865104564081299}
   spriteRenderer: {fileID: 5117407791538508529}
+  face: {fileID: 0}
   <Stat>k__BackingField:
     stats: []
   <EffectManager>k__BackingField:
@@ -305,9 +306,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingLayerID: 2119978905
+  m_SortingLayer: 2
+  m_SortingOrder: 50
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 0eb9741a00d28415db675e0e3fcf4faa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -354,3 +355,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerFace
   <Animator>k__BackingField: {fileID: 5499727282117330938}
+  <SpriteRenderer>k__BackingField: {fileID: 0}
