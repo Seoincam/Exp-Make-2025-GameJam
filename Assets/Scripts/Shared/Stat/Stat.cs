@@ -15,50 +15,49 @@ namespace Shared.Stat
     }
 
     public delegate void StatChangedAction(in Stat.StatChangedEventArgs args);
-    
+
     [Serializable]
     public class Stat
     {
-        // StatType
-        [SerializeField] private List<StatEntry> stats = new();
-        
-        private Dictionary<StatType, StatEntry> _statCache = new();
-        private Dictionary<StatType, PendingChange> _pendingChanges = new();
+        public readonly struct InitialEntry
+        {
+            public StatType Type { get; }
+            public float BaseValue { get; }
 
-        private Dictionary<StatType, int> _statIndexCache = new();
-        
-        public IReadOnlyList<StatType> AllStatTypes { get; }
+            public InitialEntry(StatType type, float baseValue)
+            {
+                Type = type;
+                BaseValue = baseValue;
+            }
+        }
+
+        [SerializeField] private List<StatEntry> stats = new();
+
+        private readonly Dictionary<StatType, StatEntry> _statCache = new();
+        private readonly Dictionary<StatType, PendingChange> _pendingChanges = new();
+        private readonly Dictionary<StatType, int> _statIndexCache = new();
+
+        public IReadOnlyList<StatType> AllStatTypes { get; private set; } = Array.Empty<StatType>();
 
         public event StatChangedAction StatChanged;
 
         public Stat(InitialStatConfig config)
         {
-            var allStatTypes = new HashSet<StatType>();
-            foreach (var configEntry in config.Entries)
+            if (config == null)
             {
-                if (_statCache.ContainsKey(configEntry.Type))
-                {
-                    Debug.LogWarning($"StatConfig에 같은 Type의 스탯({configEntry.Type})이 존재합니다. 스킵.");
-                    continue;    
-                }
-                
-                var statEntry = new StatEntry
-                {
-                    type = configEntry.Type,
-                    baseValue = configEntry.BaseValue,
-                    finalValue = configEntry.BaseValue
-                };
-                
-                stats.Add(statEntry);
-                _statCache.Add(configEntry.Type, statEntry);
-                allStatTypes.Add(configEntry.Type);
-                
-                _statIndexCache.Add(statEntry.type, stats.IndexOf(statEntry));
+                Debug.LogError($"{nameof(Stat)} config is null.");
+                return;
             }
 
-            AllStatTypes = allStatTypes.ToList();
+            var entries = config.Entries.Select(e => new InitialEntry(e.Type, e.BaseValue));
+            Initialize(entries);
         }
-        
+
+        public Stat(IEnumerable<InitialEntry> entries)
+        {
+            Initialize(entries);
+        }
+
         [Serializable]
         private class StatEntry
         {
@@ -92,11 +91,43 @@ namespace Shared.Stat
                     FinalValueChanged = true;
                 }
             }
-            
+
             public bool BaseValueChanged { get; private set; }
             public bool FinalValueChanged { get; private set; }
         }
-        
+
+        private void Initialize(IEnumerable<InitialEntry> entries)
+        {
+            stats.Clear();
+            _statCache.Clear();
+            _pendingChanges.Clear();
+            _statIndexCache.Clear();
+
+            var allStatTypes = new HashSet<StatType>();
+            foreach (var entry in entries ?? Enumerable.Empty<InitialEntry>())
+            {
+                if (_statCache.ContainsKey(entry.Type))
+                {
+                    Debug.LogWarning($"Duplicate stat type in initial entries: {entry.Type}. Ignored.");
+                    continue;
+                }
+
+                var statEntry = new StatEntry
+                {
+                    type = entry.Type,
+                    baseValue = entry.BaseValue,
+                    finalValue = entry.BaseValue
+                };
+
+                stats.Add(statEntry);
+                _statCache.Add(entry.Type, statEntry);
+                allStatTypes.Add(entry.Type);
+                _statIndexCache.Add(entry.Type, stats.Count - 1);
+            }
+
+            AllStatTypes = allStatTypes.ToList();
+        }
+
         public float GetBaseValue(StatType statType)
         {
             if (_statCache.TryGetValue(statType, out var entry))
@@ -105,7 +136,7 @@ namespace Shared.Stat
             }
 
             LogWarning(WarningType.InvalidType, nameof(statType));
-            return 0;
+            return 0f;
         }
 
         public float GetFinalValue(StatType statType)
@@ -114,14 +145,11 @@ namespace Shared.Stat
             {
                 return entry.finalValue;
             }
-            
+
             LogWarning(WarningType.InvalidType, nameof(statType));
-            return 0;
+            return 0f;
         }
 
-        /// <summary>
-        /// <c>BaseValue</c> 설정을 예약함.
-        /// </summary>
         public void SetBaseValue(StatType statType, float value)
         {
             if (!_pendingChanges.TryGetValue(statType, out var pendingChange))
@@ -132,10 +160,7 @@ namespace Shared.Stat
 
             pendingChange.NewBaseValue = value;
         }
-        
-        /// <summary>
-        /// <c>BaseValue</c> += <c>delta</c>를 예약함.
-        /// </summary>
+
         public void ModifyBaseValue(StatType statType, float delta)
         {
             if (_pendingChanges.TryGetValue(statType, out var pendingChange))
@@ -144,17 +169,14 @@ namespace Shared.Stat
             }
             else
             {
-                pendingChange = new PendingChange();
-                pendingChange.NewBaseValue = GetBaseValue(statType) + delta;
+                pendingChange = new PendingChange
+                {
+                    NewBaseValue = GetBaseValue(statType) + delta
+                };
                 _pendingChanges.Add(statType, pendingChange);
             }
         }
 
-        /// <summary>
-        /// <c>FinalValue</c> 설정을 예약함.
-        /// </summary>
-        /// <param name="statType"></param>
-        /// <param name="value"></param>
         public void SetFinalValue(StatType statType, float value)
         {
             if (!_pendingChanges.TryGetValue(statType, out var pendingChange))
@@ -168,37 +190,49 @@ namespace Shared.Stat
 
         public void ApplyPendingChanges()
         {
+            if (_pendingChanges.Count == 0)
+            {
+                return;
+            }
+
             using var _ = ListPool<StatChangedEventArgs>.Get(out var eventArgs);
-            
+
             foreach (var (statType, pendingChange) in _pendingChanges)
             {
-                var entryIndex = _statIndexCache[statType];
+                if (!_statIndexCache.TryGetValue(statType, out var entryIndex))
+                {
+                    continue;
+                }
+
                 var entry = stats[entryIndex];
-                
+
                 var oldBaseValue = entry.baseValue;
                 var oldFinalValue = entry.finalValue;
-                
+
                 if (pendingChange.BaseValueChanged)
                 {
                     entry.baseValue = pendingChange.NewBaseValue;
                 }
+
                 if (pendingChange.FinalValueChanged)
                 {
                     entry.finalValue = pendingChange.NewFinalValue;
                 }
-                
+
                 if (pendingChange.BaseValueChanged || pendingChange.FinalValueChanged)
                 {
                     eventArgs.Add(new StatChangedEventArgs(oldBaseValue, entry.baseValue, oldFinalValue, entry.finalValue));
                 }
             }
 
+            _pendingChanges.Clear();
+
             foreach (var changeEvent in eventArgs)
             {
                 StatChanged?.Invoke(in changeEvent);
             }
         }
-        
+
         private enum WarningType
         {
             InvalidType
@@ -208,21 +242,23 @@ namespace Shared.Stat
         {
             switch (type)
             {
-                case WarningType.InvalidType: Debug.LogWarning(message + " 타입의 스탯이 존재하지 않습니다."); break;
+                case WarningType.InvalidType:
+                    Debug.LogWarning(message + " stat type does not exist.");
+                    break;
             }
         }
-        
+
         public struct StatChangedEventArgs
         {
             public float OldBaseValue { get; }
             public float NewBaseValue { get; }
-            
+
             public float OldFinalValue { get; }
             public float NewFinalValue { get; }
 
             public StatChangedEventArgs(
-                float oldBaseValue, 
-                float newBaseValue, 
+                float oldBaseValue,
+                float newBaseValue,
                 float oldFinalValue,
                 float newFinalValue)
             {

@@ -64,9 +64,10 @@ namespace Player
                 return;
             }
 
-            var currentHp = stat.GetFinalValue(StatType.Health);
+            var currentHp = stat.GetBaseValue(StatType.Health);
             var nextHp = Mathf.Max(0f, currentHp - amount);
-            stat.SetFinalValue(StatType.Health, nextHp);
+            stat.SetBaseValue(StatType.Health, nextHp);
+            stat.ApplyPendingChanges();
         }
     }
 }

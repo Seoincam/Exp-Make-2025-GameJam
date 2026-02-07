@@ -15,7 +15,6 @@ public sealed class MonsterContext
     public readonly MonsterController mono;
     public readonly MonsterStateMachine sm;
 
-    public float hp;
     public bool MoveLocked { get; private set; }
 
     public void LockMove() => MoveLocked = true;
@@ -72,7 +71,7 @@ public sealed class MonsterContext
         float dist = dir.magnitude;
         if (dist < 0.0001f) return;
 
-        float stepUnits = (data.moveSpeedPixelsPerSec * UnitPerPixel) * dt;
+        float stepUnits = (mono.CurrentMoveSpeedPixelsPerSec * UnitPerPixel) * dt;
 
         // 실제 위치는 연속적으로 누적
         _realPos += dir.normalized * stepUnits;

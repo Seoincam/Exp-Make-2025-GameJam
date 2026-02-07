@@ -31,10 +31,50 @@ namespace Combat.Shoot
             }
         }
 
-        private List<Collider2D> SearchEnemiesInRange()
+        private List<Transform> SearchEnemiesInRange()
         {
+            var results = new List<Transform>();
             var hits = Physics2D.OverlapCircleAll(transform.position, searchRadius, enemyLayer);
-            return new List<Collider2D>(hits);
+            foreach (var hit in hits)
+            {
+                if (!hit || hit.transform == transform)
+                {
+                    continue;
+                }
+
+                if (!results.Contains(hit.transform))
+                {
+                    results.Add(hit.transform);
+                }
+            }
+
+            if (results.Count > 0)
+            {
+                return results;
+            }
+
+            var monsters = FindObjectsOfType<MonsterController>();
+            foreach (var monster in monsters)
+            {
+                if (!monster || !monster.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                int layerBit = 1 << monster.gameObject.layer;
+                if ((enemyLayer.value & layerBit) == 0)
+                {
+                    continue;
+                }
+
+                float dist = Vector2.Distance(transform.position, monster.transform.position);
+                if (dist <= searchRadius)
+                {
+                    results.Add(monster.transform);
+                }
+            }
+
+            return results;
         }
 
         private Transform FindClosestEnemy()

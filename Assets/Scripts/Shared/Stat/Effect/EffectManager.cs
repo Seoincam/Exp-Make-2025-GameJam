@@ -10,38 +10,39 @@ namespace Shared.Stat
     {
         [Header("Sorted")]
         [SerializeField] private List<Effect> sortedEffects = new();
-        private Dictionary<StatType, List<TemporaryModifier>> _sortedModifiers = new();
-        
-        private Stat _stat;
-        
-        private Dictionary<uint, Effect> _effects = new();
-        private Dictionary<uint, TemporaryModifier> _modifiers = new();
-        
-        private Dictionary<EffectType, List<Effect>> _effectTypeCache = new();
-        
+        private readonly Dictionary<StatType, List<TemporaryModifier>> _sortedModifiers = new();
+
+        private readonly Stat _stat;
+
+        private readonly Dictionary<uint, Effect> _effects = new();
+        private readonly Dictionary<uint, TemporaryModifier> _modifiers = new();
+
+        private readonly Dictionary<EffectType, List<Effect>> _effectTypeCache = new();
+
         private uint _nextInstanceId = 1;
 
         private bool _needSortEffects = true;
         private bool _needSortModifiers = true;
-        
+
         public EffectManager(Stat stat)
         {
             _stat = stat;
         }
-        
+
         public void Tick(float deltaTime)
         {
             if (_needSortEffects)
             {
                 SortEffects();
             }
+
             if (_needSortModifiers)
             {
                 SortModifiers();
             }
 
             using var _ = ListPool<uint>.Get(out var toRemove);
-            
+
             foreach (var effect in sortedEffects)
             {
                 effect.Tick(deltaTime);
@@ -51,34 +52,35 @@ namespace Shared.Stat
                     toRemove.Add(effect.InstanceID);
                 }
             }
-            
+
             foreach (var instanceId in toRemove)
             {
                 RemoveEffect(instanceId);
             }
-            
+
             CalculateFinalValues();
-            
-            // TODO: 필요하다면 변경된거 이벤트 발행
         }
 
         public uint AddEffect(Effect.EffectSpec effectSpec)
         {
-            if (GetEffectCount(effectSpec.Type) > 0)
+            if (effectSpec.IsUnique && GetEffectCount(effectSpec.Type) > 0)
             {
-                Debug.Log("Unique한 이벤트가 중복 추가 시도됐습니다. 무시.");
+                Debug.Log("Unique effect already exists. Ignored.");
                 return 0;
             }
-            
+
             var instanceId = _nextInstanceId++;
             var effect = CreateEffectInstance(effectSpec, instanceId);
-            
+
             sortedEffects.Add(effect);
             _effects.Add(instanceId, effect);
+
             if (!_effectTypeCache.TryGetValue(effect.Type, out var list))
             {
                 list = new List<Effect>();
+                _effectTypeCache.Add(effect.Type, list);
             }
+
             list.Add(effect);
 
             effect.OnStart();
@@ -90,23 +92,16 @@ namespace Shared.Stat
         {
             var instanceId = _nextInstanceId++;
             _modifiers.Add(instanceId, modifier);
-            
+
             _needSortModifiers = true;
             return instanceId;
         }
-        
-        /// <summary>
-        /// 안전한 제거.
-        /// 인스턴스 Id에 해당하는 효과의 태그가 일치할 경우만 제거합니다.
-        /// </summary>
+
         public void SafeRemoveEffect(uint instanceId, EffectType effectType)
         {
-            if (_effects.TryGetValue(instanceId, out var effect))
+            if (_effects.TryGetValue(instanceId, out var effect) && effect.Type == effectType)
             {
-                if (effect.Type == effectType)
-                {
-                    RemoveEffect(instanceId);
-                }
+                RemoveEffect(instanceId);
             }
         }
 
@@ -115,7 +110,6 @@ namespace Shared.Stat
             _modifiers.Remove(instanceId);
             _needSortModifiers = true;
         }
-
 
         public int GetEffectCount(EffectType type)
         {
@@ -129,33 +123,45 @@ namespace Shared.Stat
 
         private void RemoveEffect(uint instanceId)
         {
-            if (_effects.TryGetValue(instanceId, out var effect))
+            if (!_effects.TryGetValue(instanceId, out var effect))
             {
-                effect.OnEnd();
+                return;
             }
-            
+
+            effect.OnEnd();
+
+            if (_effectTypeCache.TryGetValue(effect.Type, out var list))
+            {
+                list.Remove(effect);
+                if (list.Count == 0)
+                {
+                    _effectTypeCache.Remove(effect.Type);
+                }
+            }
+
             _effects.Remove(instanceId);
             _needSortEffects = true;
         }
-        
+
         private void CalculateFinalValues()
         {
             foreach (var statType in _stat.AllStatTypes)
             {
                 var baseValue = _stat.GetBaseValue(statType);
-                _stat.SetFinalValue(statType, baseValue);
-                var finalValue = _stat.GetFinalValue(statType);
+                var finalValue = baseValue;
 
                 if (_sortedModifiers.TryGetValue(statType, out var list))
                 {
                     foreach (var modifier in list)
-                    { 
+                    {
                         finalValue = modifier.Apply(baseValue, finalValue);
                     }
-                
-                    _stat.SetFinalValue(statType, finalValue);
                 }
+
+                _stat.SetFinalValue(statType, finalValue);
             }
+
+            _stat.ApplyPendingChanges();
         }
 
         private void SortEffects()
@@ -170,7 +176,7 @@ namespace Shared.Stat
         private void SortModifiers()
         {
             _sortedModifiers.Clear();
-            
+
             foreach (var modifier in _modifiers.Values)
             {
                 if (!_sortedModifiers.TryGetValue(modifier.StatType, out var list))
@@ -178,6 +184,7 @@ namespace Shared.Stat
                     list = new List<TemporaryModifier>();
                     _sortedModifiers.Add(modifier.StatType, list);
                 }
+
                 list.Add(modifier);
             }
 
@@ -189,9 +196,6 @@ namespace Shared.Stat
             _needSortModifiers = false;
         }
 
-        /// <summary>
-        /// <c>EffectSpec</c>으로 Effect 인스턴스를 생성해 반환함.
-        /// </summary>
         private Effect CreateEffectInstance(Effect.EffectSpec effectSpec, uint instanceId)
         {
             var effectInstance = new Effect(this, _stat, effectSpec.Handlers)

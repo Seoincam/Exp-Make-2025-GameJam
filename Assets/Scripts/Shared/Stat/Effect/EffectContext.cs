@@ -16,7 +16,6 @@ namespace Shared.Stat
 
         public void RequestEnd()
         {
-            Debug.Log("RequestEnd");
             EndRequested = true;
         }
     }
