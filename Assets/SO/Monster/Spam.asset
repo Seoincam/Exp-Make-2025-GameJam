@@ -19,10 +19,11 @@ MonoBehaviour:
   attackRange: 1.2
   pixelsPerUnit: 16
   moveSpeedPixelsPerSec: 40
-  attackEnterDistance: 0
+  attackEnterDistance: 3
   attackExitDistance: 3
   combatMoveBehaviours: []
-  combatAttackBehaviours: []
+  combatAttackBehaviours:
+  - {fileID: 11400000, guid: 36101de6bffb24b45ab58931f1b4413b, type: 2}
   moveWeights:
   - 60
   - 25

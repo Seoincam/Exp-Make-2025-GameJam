@@ -27,8 +27,12 @@ MonoBehaviour:
   - 60
   - 25
   - 15
-  category: 0
+  category: 2
   defaultHitStunSeconds: 0.3
   dropCurrencyAmount: 0
   currencyDropPrefab: {fileID: 0}
   deathFadeSeconds: 0.8
+  contactDamageRange: 1
+  contactDamage: 5
+  contactDamageInterval: 0.5
+  contactDamageByRange: 1
