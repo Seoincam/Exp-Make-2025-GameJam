@@ -2,6 +2,9 @@ using Player;
 using Shared.Stat;
 using UnityEngine;
 
+/// <summary>
+/// 체력과 경험치를 얻음.
+/// </summary>
 public sealed class RiceItem : Item
 {
     [SerializeField] private int healthAmount = 1;
@@ -19,7 +22,9 @@ public sealed class RiceItem : Item
             return;
         }
 
-        player.Stat.ModifyBaseValue(StatType.Health, amount);
-        player.Stat.ApplyPendingChanges();
+        var spec = Effect.CreateSpec(EffectType.RiceItem)
+            .AddHandler(new InstantStatHandler(StatType.Health, amount))
+            .AddHandler(new InstantStatHandler(StatType.Exp, amount));
+        player.EffectManager.AddEffect(spec);
     }
 }

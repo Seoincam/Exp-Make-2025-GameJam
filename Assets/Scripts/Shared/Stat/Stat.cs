@@ -18,6 +18,11 @@ namespace Shared.Stat
         // Player
         
         /// <summary>
+        /// 경험치.
+        /// </summary>
+        Exp,
+        
+        /// <summary>
         /// 멸치 탄알.
         /// </summary>
         AnchovyBullet,
