@@ -210,10 +210,7 @@ namespace Player
 
         private void OnStatChanged(in Stat.StatChangedEventArgs args)
         {
-            if (args.Type == StatType.Exp)
-            {
-                Debug.Log($"Exp: {args.NewFinalValue}");
-            }
+            
         }
     }
 }
