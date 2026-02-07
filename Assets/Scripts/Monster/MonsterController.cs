@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Combat.Shoot;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -18,7 +19,12 @@ public class MonsterController : MonoBehaviour, IDamagable
     [SerializeField] bool inspectorHasData;
     [SerializeField] bool inspectorHasPlayer;
     [SerializeField] string inspectorState;
+    [Header("=== Contact Damage (Runtime Debug) ===")]
+    [SerializeField] bool inspectorPlayerInContact;
+    [SerializeField] float inspectorNextContactDamageTime;
 
+    float _nextContactDamageTime;
+    bool _isTouchingPlayer;
     [SerializeField] MonsterData data;
     [SerializeField] public string monster_Id;
 
@@ -106,6 +112,8 @@ public class MonsterController : MonoBehaviour, IDamagable
 
     void Update()
     {
+        if (Player == null)
+            Player = GameObject.FindWithTag("Player")?.transform;
         inspectorInitialized = _initialized;
         inspectorHasData = (Data != null);
         inspectorHasPlayer = (Player != null);
@@ -113,8 +121,49 @@ public class MonsterController : MonoBehaviour, IDamagable
 
         if (!_initialized) return;
         root.Tick();
+        TryApplyContactDamage(Time.time);
+    }
+    void TryApplyContactDamage(float now)
+    {
+        if (_killed) return;
+        if (!_initialized) return;
+        if (Data == null) return;
+        if (Player == null) return;
+
+        // 데미지 옵션이 꺼져있으면 스킵
+        if (Data.contactDamage <= 0f) return;
+
+        bool canHit = false;
+
+        if (Data.contactDamageByRange)
+        {
+            float dist = Vector2.Distance(transform.position, Player.position);
+            canHit = dist <= Data.contactDamageRange;
+        }
+        else
+        {
+            // 접촉(트리거/충돌) 기반
+            canHit = _isTouchingPlayer;
+        }
+
+        inspectorPlayerInContact = canHit;
+
+        if (!canHit) return;
+
+        float interval = Mathf.Max(0.01f, Data.contactDamageInterval);
+        if (now < _nextContactDamageTime) return;
+
+        _nextContactDamageTime = now + interval;
+        inspectorNextContactDamageTime = _nextContactDamageTime;
+
+        ApplyDamageToPlayer(Data.contactDamage);
     }
 
+    void ApplyDamageToPlayer(float amount)
+    {
+        Debug.Log($"플레이어에게 {amount}데미지");
+        // 플레이어 근접시 데미지를 주는 로직입니다. 플레이어 로직이랑 연결부탁드리겟습니다.
+    }
     public void Damage(DamageInfo damageInfo) => TakeDamage(damageInfo);
 
     public void TakeDamage(DamageInfo damageInfo)

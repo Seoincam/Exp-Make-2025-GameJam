@@ -16,8 +16,10 @@ public sealed class MonsterContext
     public readonly MonsterStateMachine sm;
 
     public float hp;
+    public bool MoveLocked { get; private set; }
 
-    public bool SightLocked { get; set; }
+    public void LockMove() => MoveLocked = true;
+    public void UnlockMove() => MoveLocked = false;
 
     public int nextBehaviourIndex = -1;
     public bool isCombat;
@@ -34,6 +36,8 @@ public sealed class MonsterContext
     public bool IsReady(IMonsterBehaviour beh)
         => !nextReadyTime.TryGetValue(beh, out var t) || Time.time >= t;
 
+    Vector2 _realPos;
+    bool _realPosInitialized;
     float UnitPerPixel => 1f / Mathf.Max(1, data.pixelsPerUnit);
 
     public MonsterContext(MonsterController owner)
@@ -51,24 +55,37 @@ public sealed class MonsterContext
 
         hub = new MonsterDecisionHub(this);
     }
+    public void EnsureRealPos()
+    {
+        if (_realPosInitialized) return;
+        _realPos = transform.position;
+        _realPosInitialized = true;
+    }
 
-    public void MoveTowardPlayerPixel(float dt)
+    public void MoveTowardPlayerPixelSmooth(float dt)
     {
         if (!player) return;
 
-        Vector2 dir = (player.position - transform.position);
-        if (dir.sqrMagnitude < 0.0001f) return;
+        EnsureRealPos();
+
+        Vector2 dir = ((Vector2)player.position - _realPos);
+        float dist = dir.magnitude;
+        if (dist < 0.0001f) return;
 
         float stepUnits = (data.moveSpeedPixelsPerSec * UnitPerPixel) * dt;
-        Vector2 next = (Vector2)transform.position + dir.normalized * stepUnits;
 
-        // 픽셀 그리드로 스냅
-        transform.position = SnapToPixelGrid(next);
+        // 실제 위치는 연속적으로 누적
+        _realPos += dir.normalized * stepUnits;
+
+        // 표시만 픽셀 스냅
+        transform.position = SnapToPixelGrid(_realPos);
     }
 
     public void StopMovePixel()
     {
-        // velocity 기반이 아니라 별도 처리 없음.
+        // 멈출 때 realPos도 현재 스냅 위치로 맞춰서 drift 방지
+        _realPos = transform.position;
+        _realPosInitialized = true;
     }
 
     Vector3 SnapToPixelGrid(Vector2 pos)

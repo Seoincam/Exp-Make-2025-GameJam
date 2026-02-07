@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class M1AnimationPlayer : AnimationPlayerBase
+public class ShrimpAnimationPlayer : AnimationPlayerBase
 {
     [Header("Targets")]
     [SerializeField] Animator animator;

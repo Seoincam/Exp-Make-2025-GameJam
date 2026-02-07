@@ -45,7 +45,6 @@ public sealed class MonsterDetectState : IMonsterState
     public void Enter()
     {
         ctx.animationHub?.SetTag(MonsterStateTag.Detect, ctx);
-        ctx.SightLocked = false;
     }
 
     public void Tick()
@@ -65,7 +64,8 @@ public sealed class MonsterDetectState : IMonsterState
             return;
         }
 
-        ctx.MoveTowardPlayerPixel(Time.deltaTime);
+        if (!ctx.MoveLocked)
+            ctx.MoveTowardPlayerPixelSmooth(Time.deltaTime);
     }
 
     public void Exit()

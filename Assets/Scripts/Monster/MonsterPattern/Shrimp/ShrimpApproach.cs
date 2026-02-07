@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Behaviours/M1/Approach Player")]
+[CreateAssetMenu(menuName = "Behaviours/Shrimp/Approach Player")]
 public class M1ApproachBehaviourSO : AttackBehaviourSO
 {
     [Tooltip("이 거리 이내로 접근할 때까지 실행")]

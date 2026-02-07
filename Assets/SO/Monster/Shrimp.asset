@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfc00a4e40923d9478f5d3408c22d6cd, type: 3}
-  m_Name: M1 Data
+  m_Name: Shrimp
   m_EditorClassIdentifier: Assembly-CSharp::MonsterData
-  monsterName: M1
+  monsterName: Shrimp
   maxHp: 100
   attackPower: 5
   attackCooldown: 1.5
-  attackRange: 1.2
+  attackRange: 0
   pixelsPerUnit: 16
-  moveSpeedPixelsPerSec: 40
-  attackEnterDistance: 2.2
+  moveSpeedPixelsPerSec: 20
+  attackEnterDistance: 1
   attackExitDistance: 3
   combatMoveBehaviours: []
   combatAttackBehaviours: []

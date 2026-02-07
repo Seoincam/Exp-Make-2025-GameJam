@@ -26,9 +26,9 @@ public class MonsterData : ScriptableObject
     public AttackBehaviourSO[] combatAttackBehaviours;
     public float[] moveWeights = { 60, 25, 15 };
 
-    public enum MonsterCategory { Hound, Turret, Miner, Beetle, Cleaner, Titan }
+    public enum MonsterCategory { Shrimp, Octopus, Salt, Scrubber, OiliveOil }
     [Header("행동 타입")]
-    public MonsterCategory category = MonsterCategory.Hound;
+    public MonsterCategory category = MonsterCategory.Shrimp;
 
     [Header("피격 스턴")]
     public float defaultHitStunSeconds = 0.3f;
@@ -42,4 +42,18 @@ public class MonsterData : ScriptableObject
 
     [Tooltip("죽을 때 사라지는(페이드) 시간")]
     public float deathFadeSeconds = 0.8f;
+
+    [Header("몸박/근접 데미지")]
+    [Tooltip("플레이어에게 데미지를 줄 수 있는 근접 사거리(월드 단위)")]
+    public float contactDamageRange = 1.0f;
+
+    [Tooltip("몸박 데미지 1틱당 피해량")]
+    public float contactDamage = 5f;
+
+    [Tooltip("몸박 데미지 간격(초). 예: 0.5면 0.5초마다 1번")]
+    public float contactDamageInterval = 0.5f;
+
+    [Tooltip("켜면 근접 사거리만 만족해도 데미지(거리 체크). 끄면 트리거/충돌 접촉이 있어야만 데미지")]
+    public bool contactDamageByRange = true;
+
 }
