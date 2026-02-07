@@ -35,8 +35,6 @@ namespace Player.State
     public abstract class PlayerStateBase
     {
         protected IEntity Entity;
-
-        protected Effect.EffectSpec DamageEffectSpec;
         
         public PlayerState StateType { get; protected set; }
         
@@ -45,10 +43,7 @@ namespace Player.State
         public PlayerStateBase(IEntity entity)
         {
             Entity = entity;
-            
-            DamageEffectSpec = Effect
-                .CreateSpec(EffectType.Damage)
-                .SetOrder(EffectOrder.Early);
+            entity.Stat.StatChanged += OnStatChanged;
         }
 
         public abstract void OnEnter();
@@ -59,7 +54,7 @@ namespace Player.State
 
         public abstract void OnDamage(DamageInfo damageInfo);
 
-        public virtual void OnStatChanged(Stat.StatChangedEventArgs args)
+        public virtual void OnStatChanged(in Stat.StatChangedEventArgs args)
         {
             if (args.NewFinalValue <= 0.001f)
             {
