@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(Animator), typeof(SpriteRenderer))]
-public class MonsterController : MonoBehaviour
+public class MonsterController : MonoBehaviour, IDamagable
 {
     [SerializeField] MonsterAnimationHub animationHub;
     public MonsterAnimationHub AnimationHub => animationHub;
@@ -144,6 +144,11 @@ public class MonsterController : MonoBehaviour
     // 외부에서 데미지
     // 기존 시그니처 보존
     public void TakeDamage(float dmg) => TakeDamage(dmg, 0f);
+
+    public void Damage(float amount)
+    {
+        TakeDamage(amount);
+    }
 
     // 새 시그니처 스턴 지속시간 포함
     public void TakeDamage(float dmg, float stunSec)
