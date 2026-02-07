@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Normal
   m_EditorClassIdentifier: Assembly-CSharp::BulletSO
   bulletPrefab: {fileID: 4720526849940897613, guid: 366794d8b2ddf4347b31fa6eb31fae31, type: 3}
-  bulletCount: 10
+  bulletCount: 0

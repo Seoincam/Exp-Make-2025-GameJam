@@ -106,6 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ee23fe4a8953d24f953cd65541783b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Combat.Shoot.AnchovyBullet
+  defaultSpeed: 15
+  defaultMaxDistanceFromOwner: 20
   initialDamageMultiplier: 0.75
   damageMultiplierPerPierce: 0.85
   minDamageToKeepPiercing: 0.1

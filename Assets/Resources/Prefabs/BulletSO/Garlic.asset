@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Garlic
   m_EditorClassIdentifier: Assembly-CSharp::BulletSO
   bulletPrefab: {fileID: 0}
-  bulletCount: 10
+  bulletCount: 20

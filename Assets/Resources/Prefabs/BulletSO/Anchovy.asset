@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Anchovy
   m_EditorClassIdentifier: Assembly-CSharp::BulletSO
   bulletPrefab: {fileID: 4720526849940897613, guid: 1626b005b5757ba459e57d8da40ee809, type: 3}
-  bulletCount: 10
+  bulletCount: 50

@@ -30,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 123088886286255188}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.87, y: 2.68, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: a674720496c1ed248a5b7ea3e22a11fd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e1241ae56a41c4cb2bb0e187cc2c1ddb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -105,7 +105,7 @@ Animator:
   m_GameObject: {fileID: 123088886286255188}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9b0f96c7238ee994daf1f774dbe42127, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -143,6 +143,7 @@ MonoBehaviour:
     stats: []
   effectManager:
     sortedEffects: []
+  logDamageReceived: 1
   data: {fileID: 11400000, guid: 804f14864a8d43c41a7b18de461e721f, type: 2}
   monster_Id: 
   _killed: 0
@@ -200,11 +201,11 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.11, y: 0.11}
+    oldSize: {x: 2.6956522, y: 2.347826}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.3, y: 1.8}
   m_EdgeRadius: 0

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Sausage
   m_EditorClassIdentifier: Assembly-CSharp::BulletSO
   bulletPrefab: {fileID: 4720526849940897613, guid: df33d5effb3305a42a65e1188556abcb, type: 3}
-  bulletCount: 10
+  bulletCount: 30
