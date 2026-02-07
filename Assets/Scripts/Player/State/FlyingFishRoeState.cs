@@ -5,15 +5,22 @@ namespace Player.State
 {
     public class FlyingFishRoeState : PlayerStateBase
     {
-        
         public FlyingFishRoeState(IEntity entity) : base(entity)
         {
             StateType = PlayerState.FlyingFishRoe;
         }
 
+        public override void OnEnter()
+        {
+        }
+
         public override void OnTick(float deltaTime)
         {
             
+        }
+
+        public override void OnExit()
+        {
         }
 
         public override void OnDamage(DamageInfo damageInfo)

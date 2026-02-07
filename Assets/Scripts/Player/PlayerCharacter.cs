@@ -9,10 +9,6 @@ namespace Player
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerCharacter : MonoBehaviour, IDamagable, IEntity
     {
-        [Header("Settings")] 
-        [SerializeField] private float moveSpeed = 2f;
-        [SerializeField] private float anchovyMoveSpeedMultiplier = 1.5f;
-        
         [Header("References")]
         [SerializeField] private Rigidbody2D rb;
         [SerializeField] private InitialStatConfig statConfig;
@@ -24,7 +20,7 @@ namespace Player
         
         private PlayerInputController _input;
 
-        private Vector2 MoveInput => _input.Move * GetCurrentMoveSpeed();
+        private Vector2 MoveInput => _input.Move * Stat.GetFinalValue(StatType.MoveSpeed);
 
         private PlayerStateBase _currentState;
 
@@ -58,18 +54,6 @@ namespace Player
             var deltaTime = Time.fixedDeltaTime;
             _currentState?.OnTick(deltaTime);
             EffectManager.Tick(deltaTime);
-        }
-
-        private float GetCurrentMoveSpeed()
-        {
-            float speed = moveSpeed;
-
-            if (shootComponent && shootComponent.IsCurrentBullet<AnchovyBullet>())
-            {
-                speed *= anchovyMoveSpeedMultiplier;
-            }
-
-            return speed;
         }
 
         public void Damage(DamageInfo damageInfo)

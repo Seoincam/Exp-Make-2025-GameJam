@@ -50,7 +50,11 @@ namespace Player.State
                 .SetOrder(EffectOrder.Early);
         }
 
+        public abstract void OnEnter();
+
         public abstract void OnTick(float deltaTime);
+
+        public abstract void OnExit();
 
         public abstract void OnDamage(DamageInfo damageInfo);
     }

@@ -9,6 +9,11 @@ namespace Shared.Stat
         Burn,
         
         /// <summary>
+        /// 마늘로 인한 이동 속도 버프.
+        /// </summary>
+        GarlicSpeedBuff,
+        
+        /// <summary>
         /// 상대로부터 데미지를 받는 효과를 나타냄.
         /// </summary>
         Damage,

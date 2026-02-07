@@ -10,9 +10,17 @@ namespace Player.State
             StateType = PlayerState.Sausage;
         }
 
+        public override void OnEnter()
+        {
+        }
+
         public override void OnTick(float deltaTime)
         {
             
+        }
+
+        public override void OnExit()
+        {
         }
 
         public override void OnDamage(DamageInfo damageInfo)
