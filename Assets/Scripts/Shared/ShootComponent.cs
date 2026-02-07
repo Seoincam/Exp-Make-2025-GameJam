@@ -3,37 +3,47 @@ using UnityEngine;
 
 namespace Combat.Shoot
 {
+    public enum eFireMode
+    {
+        Normal,
+    }
+
+    [RequireComponent(typeof(ShootRangeDebugView))]
     public class ShootComponent : MonoBehaviour
     {
-        [Header("탐색")]
+        [Header("Search")]
         [SerializeField] private float searchRadius = 10f;
         [SerializeField] private LayerMask enemyLayer;
 
-        [Header("탄")]
+        [Header("Bullet")]
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float bulletSpeed = 15f;
         [SerializeField] private float bulletLifetime = 3f;
         [SerializeField] private float damage = 10f;
 
-        /// <summary>
-        /// 1. 일정 범위 안의 적을 모두 탐색하여 반환한다.
-        /// </summary>
-        public List<Collider2D> SearchEnemiesInRange()
+        public float SearchRadius => searchRadius;
+
+        private void Awake()
         {
-            var results = new List<Collider2D>();
-            var hits = Physics2D.OverlapCircleAll(transform.position, searchRadius, enemyLayer);
-            results.AddRange(hits);
-            return results;
+            if (!TryGetComponent<ShootRangeDebugView>(out _))
+            {
+                gameObject.AddComponent<ShootRangeDebugView>();
+            }
         }
 
-        /// <summary>
-        /// 2. 범위 안의 적 중 가장 가까운 적을 찾아 반환한다.
-        ///    적이 없으면 null.
-        /// </summary>
-        public Transform FindClosestEnemy()
+        private List<Collider2D> SearchEnemiesInRange()
+        {
+            var hits = Physics2D.OverlapCircleAll(transform.position, searchRadius, enemyLayer);
+            return new List<Collider2D>(hits);
+        }
+
+        private Transform FindClosestEnemy()
         {
             var enemies = SearchEnemiesInRange();
-            if (enemies.Count == 0) return null;
+            if (enemies.Count == 0)
+            {
+                return null;
+            }
 
             Transform closest = null;
             float minDist = float.MaxValue;
@@ -51,14 +61,14 @@ namespace Combat.Shoot
             return closest;
         }
 
-        /// <summary>
-        /// 3. 가장 가까운 적을 향해 탄을 생성한다.
-        ///    타깃이 없으면 null 반환.
-        /// </summary>
-        public GameObject FireAtClosestEnemy()
+        private GameObject FireAtClosestEnemy()
         {
             Transform target = FindClosestEnemy();
-            if (target == null) return null;
+            if (target == null)
+            {
+                Debug.Log("ShootComponent: no target in range.");
+                return null;
+            }
 
             Vector2 direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -74,13 +84,15 @@ namespace Combat.Shoot
                 bulletComp.Init(direction, bulletSpeed, bulletLifetime, damage, gameObject);
             }
 
+            Debug.Log($"ShootComponent: fired bullet to {target.name}");
+
             return bullet;
         }
 
-        private void OnDrawGizmosSelected()
+        public void Fire()
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, searchRadius);
+            Debug.Log("ShootComponent: fire requested.");
+            FireAtClosestEnemy();
         }
     }
 }

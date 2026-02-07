@@ -17,6 +17,8 @@ namespace Combat.Shoot
             _lifetime = lifetime;
             _damage = damage;
             _owner = owner;
+
+            Debug.Log($"Bullet: initialized (damage={_damage}, owner={_owner?.name})");
         }
 
         private void Update()
@@ -26,6 +28,7 @@ namespace Combat.Shoot
             _lifetime -= Time.deltaTime;
             if (_lifetime <= 0f)
             {
+                Debug.Log("Bullet: lifetime ended.");
                 Destroy(gameObject);
             }
         }
@@ -34,6 +37,7 @@ namespace Combat.Shoot
         {
             if (other.TryGetComponent<IDamagable>(out var damageable))
             {
+                Debug.Log($"Bullet: hit {other.name}");
                 damageable.Damage(new DamageInfo(
                     _damage,
                     _owner,
