@@ -11,6 +11,13 @@ namespace Shared.Stat
         [SerializeField] private float value;
 
         private float _timer;
+
+        public PeriodicStatHandler(StatType statType, float interval, float value)
+        {
+            this.statType = statType;
+            this.interval = interval;
+            this.value = value;
+        }
         
         public void OnStart(EffectContext context)
         {
