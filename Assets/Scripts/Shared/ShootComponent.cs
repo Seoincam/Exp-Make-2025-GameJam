@@ -19,6 +19,9 @@ namespace Combat.Shoot
         [Header("Bullet")]
         [SerializeField] private GameObject bulletPrefab;
 
+        [Header("References")]
+        [SerializeField] private Animator animator;
+
         public GameObject BulletPrefab => bulletPrefab;
 
         public float SearchRadius => searchRadius;
@@ -129,6 +132,7 @@ namespace Combat.Shoot
             {
                 float damage = ResolveDamageFromOwner();
                 bulletComp.Init(target, damage, gameObject);
+                animator.SetTrigger("Attack");
             }
 
             return bulletComp ? bulletComp.gameObject : null;
