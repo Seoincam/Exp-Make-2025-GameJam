@@ -19,6 +19,8 @@ namespace Player
         [field: SerializeField] public EffectManager EffectManager { get; private set; }
         
         private PlayerInputController _input;
+        
+        public static PlayerCharacter Current { get; private set; }
 
         private Vector2 MoveInput => _input.Move * Stat.GetFinalValue(StatType.MoveSpeed);
 
@@ -39,6 +41,8 @@ namespace Player
             Stat = new Stat(statConfig);
             EffectManager = new EffectManager(Stat);
 
+            Current = this;
+            
             // 테스트
             // var effectSpec = Effect.CreateSpec(EffectType.Test)
             //     .SetUnique()
