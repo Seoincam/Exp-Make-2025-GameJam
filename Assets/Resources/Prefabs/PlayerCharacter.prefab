@@ -142,7 +142,7 @@ MonoBehaviour:
   shootComponent: {fileID: 6347181874924331050}
   animator: {fileID: 2272865104564081299}
   spriteRenderer: {fileID: 5117407791538508529}
-  face: {fileID: 0}
+  face: {fileID: 6714241094883294234}
   <Stat>k__BackingField:
     stats: []
   <EffectManager>k__BackingField:
@@ -355,4 +355,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerFace
   <Animator>k__BackingField: {fileID: 5499727282117330938}
-  <SpriteRenderer>k__BackingField: {fileID: 0}
+  <SpriteRenderer>k__BackingField: {fileID: 4142208952002481152}

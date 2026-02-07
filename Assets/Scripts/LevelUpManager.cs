@@ -27,6 +27,8 @@ namespace DefaultNamespace
             buttons[0].onClick.AddListener(OnClickAttackUp);
             buttons[1].onClick.AddListener(OnClickAttackSpeedUp);
             buttons[2].onClick.AddListener(OnClickMoveSpeedUp);
+            
+            gameObject.SetActive(false);
         }
 
         private async UniTask InitializeAsync()
