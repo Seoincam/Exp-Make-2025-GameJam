@@ -85,7 +85,72 @@ public sealed class MonsterContext
         _realPos = transform.position;
         _realPosInitialized = true;
     }
+    static readonly Collider2D[] _hits = new Collider2D[16];
 
+    public void MoveTowardPlayer_KeepDistance(float dt)
+    {
+        if (!player) return;
+
+        EnsureRealPos();
+
+        Vector2 pos = _realPos;
+
+        float stepUnits = (mono.CurrentMoveSpeedPixelsPerSec * UnitPerPixel) * dt;
+
+        float minP = Mathf.Max(0f, data.minPlayerDistance);
+        Vector2 toPlayer = (Vector2)player.position - pos;
+        float distP = toPlayer.magnitude;
+
+        // distP가 minPlayerDistance보다 가까우면 플레이어에게서 멀어짐
+        if (minP > 0f && distP > 0.0001f && distP < minP)
+        {
+            Vector2 awayFromPlayer = (-toPlayer / distP); // 플레이어 반대
+            _realPos += awayFromPlayer * stepUnits;
+            transform.position = SnapToPixelGrid(_realPos);
+            return;
+        }
+
+        float r = Mathf.Max(0f, data.minMonsterDistance);
+        if (r > 0f)
+        {
+            int count = Physics2D.OverlapCircleNonAlloc(pos, r, _hits, data.monsterLayer);
+
+            Vector2 push = Vector2.zero;
+            int used = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                var c = _hits[i];
+                if (!c) continue;
+                if (c.transform == transform) continue;
+
+                Vector2 other = c.transform.position;
+                Vector2 away = pos - other;
+                float d = away.magnitude;
+                if (d < 0.0001f) continue;
+
+                float overlap = (r - d);
+                if (overlap > 0f)
+                {
+                    push += (away / d) * overlap; // 겹친 양만큼
+                    used++;
+                }
+            }
+
+            // 가까운 몬스터가 있으면 일단 벌어짐
+            if (used > 0)
+            {
+                Vector2 dir = push.normalized;
+                _realPos += dir * stepUnits;
+                transform.position = SnapToPixelGrid(_realPos);
+                return;
+            }
+        }
+
+        if (toPlayer.sqrMagnitude < 0.0001f) return;
+        _realPos += toPlayer.normalized * stepUnits;
+        transform.position = SnapToPixelGrid(_realPos);
+    }
     Vector3 SnapToPixelGrid(Vector2 pos)
     {
         float ppu = Mathf.Max(1, data.pixelsPerUnit);

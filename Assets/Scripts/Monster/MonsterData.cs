@@ -26,7 +26,7 @@ public class MonsterData : ScriptableObject
     public AttackBehaviourSO[] combatAttackBehaviours;
     public float[] moveWeights = { 60, 25, 15 };
 
-    public enum MonsterCategory { Shrimp, Octopus, Salt, Scrubber, OiliveOil }
+    public enum MonsterCategory { Shrimp, Octopus, Kimchi, SoyCrab, Spam }
     [Header("행동 타입")]
     public MonsterCategory category = MonsterCategory.Shrimp;
 
@@ -55,5 +55,10 @@ public class MonsterData : ScriptableObject
 
     [Tooltip("켜면 근접 사거리만 만족해도 데미지(거리 체크). 끄면 트리거/충돌 접촉이 있어야만 데미지")]
     public bool contactDamageByRange = true;
+
+    [Header("몹 간 최소 거리")]
+    public float minMonsterDistance = 0.6f;
+    public float minPlayerDistance = 1f;
+    public LayerMask monsterLayer;
 
 }

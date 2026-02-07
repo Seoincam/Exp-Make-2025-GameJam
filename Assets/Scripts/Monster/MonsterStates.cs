@@ -65,7 +65,7 @@ public sealed class MonsterDetectState : IMonsterState
         }
 
         if (!ctx.MoveLocked)
-            ctx.MoveTowardPlayerPixelSmooth(Time.deltaTime);
+            ctx.MoveTowardPlayer_KeepDistance(Time.deltaTime);
     }
 
     public void Exit()
@@ -113,12 +113,25 @@ public sealed class AttackState : IMonsterState
     {
         if (!ctx.player)
         {
+            // 실행 중이면 그냥 인터럽트 후 Idle
             Switch(Route.Idle);
             return;
         }
 
+        // 패턴(돌진 등)이 이동을 독점 중이면
+        // - 거리 기반 상태 전환(attackExitDistance) 금지
+        // - StopMovePixel로 위치 동기화하지 말기
+        if (ctx.MoveLocked)
+            return;
+
+        // 실행 중 코루틴이 있으면(공격 패턴 진행 중) 재선택/전환 최소화
+        // (원하면 아래 거리 체크는 유지 가능하지만, 보통은 패턴 끝날 때까지 기다림)
+        if (running != null)
+            return;
+
         float dist = Vector2.Distance(ctx.transform.position, ctx.player.position);
 
+        // 공격 상태 유지 조건을 “근접 유지”로 쓰고 싶다면 여기서만
         if (dist >= ctx.data.attackExitDistance)
         {
             Switch(Route.Detect);
@@ -220,6 +233,7 @@ public sealed class AttackState : IMonsterState
         return null;
     }
 }
+
 public class AutoDestroy : MonoBehaviour
 {
     float life;
