@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: New Spam Y Charge Attack Behaviour SO
   m_EditorClassIdentifier: Assembly-CSharp::SpamYChargeAttackBehaviourSO
   yRange: 2
-  yOffsetN: 2
-  cooldown: 10
+  yOffsetN: 5
+  cooldown: 2
   windupTime: 0.5
-  dashSpeed: 10
+  dashSpeed: 20
   maxDashDistance: 0
-  playerTag: Player
-  sweepRadius: 0.5
+  hitRadius: 0.5
   damage: 20
   pixelsPerUnit: 0

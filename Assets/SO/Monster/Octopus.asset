@@ -19,7 +19,7 @@ MonoBehaviour:
   attackRange: 1.2
   pixelsPerUnit: 16
   moveSpeedPixelsPerSec: 40
-  attackEnterDistance: 2.2
+  attackEnterDistance: 0
   attackExitDistance: 3
   combatMoveBehaviours: []
   combatAttackBehaviours: []
@@ -27,8 +27,12 @@ MonoBehaviour:
   - 60
   - 25
   - 15
-  category: 0
+  category: 1
   defaultHitStunSeconds: 0.3
   dropCurrencyAmount: 0
   currencyDropPrefab: {fileID: 0}
   deathFadeSeconds: 0.8
+  contactDamageRange: 1
+  contactDamage: 5
+  contactDamageInterval: 0.5
+  contactDamageByRange: 1

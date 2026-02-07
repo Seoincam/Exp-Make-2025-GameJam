@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 3625043607559282579, guid: 0d267bc78a0864eb48358689b29ed20a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -132,9 +132,22 @@ MonoBehaviour:
   inspectorCurrentHP: 0
   inspectorMaxHP: 0
   inspectorHPRatio: 0
+  inspectorInitialized: 0
+  inspectorHasData: 0
+  inspectorHasPlayer: 0
+  inspectorState: 
+  inspectorPlayerInContact: 0
+  inspectorNextContactDamageTime: 0
+  stat:
+    stats: []
+  effectManager:
+    sortedEffects: []
   data: {fileID: 11400000, guid: fafac9675e83901439c39e7e6b256501, type: 2}
   monster_Id: 
   _killed: 0
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &1440166657579178438
 MonoBehaviour:
   m_ObjectHideFlags: 0
