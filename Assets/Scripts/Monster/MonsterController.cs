@@ -13,7 +13,11 @@ public class MonsterController : MonoBehaviour, IDamagable
     [SerializeField] float inspectorCurrentHP;
     [SerializeField] float inspectorMaxHP;
     [SerializeField] float inspectorHPRatio;
-
+    [Header("=== Runtime Init (Debug) ===")]
+    [SerializeField] bool inspectorInitialized;
+    [SerializeField] bool inspectorHasData;
+    [SerializeField] bool inspectorHasPlayer;
+    [SerializeField] string inspectorState;
 
     [SerializeField] MonsterData data;
     [SerializeField] public string monster_Id;
@@ -48,7 +52,15 @@ public class MonsterController : MonoBehaviour, IDamagable
         Sprite = GetComponent<SpriteRenderer>();
         Player = GameObject.FindWithTag("Player")?.transform;
     }
-
+    void Start()
+    {
+        // 스포너가 InitAfterSpawn를 확실히 호출한다면 이 블록은 제거
+        if (!_initialized)
+        {
+            // monster_Id가 비어있으면 임시로 name 사용
+            InitAfterSpawn(string.IsNullOrEmpty(monster_Id) ? name : monster_Id);
+        }
+    }
     public void InitAfterSpawn(string monsterId)
     {
         if (string.IsNullOrEmpty(monsterId))
@@ -94,6 +106,11 @@ public class MonsterController : MonoBehaviour, IDamagable
 
     void Update()
     {
+        inspectorInitialized = _initialized;
+        inspectorHasData = (Data != null);
+        inspectorHasPlayer = (Player != null);
+        inspectorState = root != null && root.Current != null ? root.Current.GetType().Name : "None";
+
         if (!_initialized) return;
         root.Tick();
     }
