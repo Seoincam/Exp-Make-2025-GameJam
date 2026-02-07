@@ -35,13 +35,12 @@ namespace Player
             stat = new Stat(statConfig);
             effectManager = new EffectManager(stat);
 
-            var effectSpec = Effect.CreateSpec(EffectType.Test)
-                .SetUnique()
-                .AddHandler(new LifeTimeHandler(5f))
-                .AddHandler(new TemporaryModifierHandler(StatType.Health, ModifierType.Additive, 10f));
-            var id = effectManager.AddEffect(effectSpec);
-            
-            Debug.Log("이펙트 추가됨: " + id);
+            // 테스트
+            // var effectSpec = Effect.CreateSpec(EffectType.Test)
+            //     .SetUnique()
+            //     .AddHandler(new LifeTimeHandler(5f))
+            //     .AddHandler(new TemporaryModifierHandler(StatType.Health, ModifierType.Additive, 10f));
+            // var id = effectManager.AddEffect(effectSpec);
         }
 
         private void FixedUpdate()
