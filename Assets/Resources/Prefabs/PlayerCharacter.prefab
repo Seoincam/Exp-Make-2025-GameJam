@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2348651680078928861}
   - component: {fileID: 1295786748533465133}
   - component: {fileID: 6347181874924331050}
+  - component: {fileID: 2272865104564081299}
   m_Layer: 7
   m_Name: PlayerCharacter
   m_TagString: Player
@@ -86,7 +87,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 950c3966431264ca398a1cef438dc640, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -137,7 +138,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerCharacter
   rb: {fileID: 3783996688863904971}
   statConfig: {fileID: 11400000, guid: bfd03c005b7d34ed0941da733620df13, type: 2}
-  shootComponent: {fileID: 0}
+  shootComponent: {fileID: 6347181874924331050}
+  animator: {fileID: 2272865104564081299}
+  spriteRenderer: {fileID: 5117407791538508529}
   <Stat>k__BackingField:
     stats: []
   <EffectManager>k__BackingField:
@@ -159,6 +162,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInputController
   virtualJoystick: {fileID: 0}
   shootComponent: {fileID: 0}
+  playerCharacter: {fileID: 0}
+  fallbackFireInterval: 0.2
+  selfDamageOnFire: 1
+  inputCooldownSeconds: 1
 --- !u!114 &1295786748533465133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,3 +201,25 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   bulletPrefab: {fileID: 4720526849940897613, guid: 366794d8b2ddf4347b31fa6eb31fae31, type: 3}
+--- !u!95 &2272865104564081299
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2881337506349131563}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 908696f8432654ab29a6a9b3da3b0bc8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

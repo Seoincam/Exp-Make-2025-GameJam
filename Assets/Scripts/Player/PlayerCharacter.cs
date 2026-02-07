@@ -13,6 +13,8 @@ namespace Player
         [SerializeField] private Rigidbody2D rb;
         [SerializeField] private InitialStatConfig statConfig;
         [SerializeField] private ShootComponent shootComponent;
+        [SerializeField] private Animator animator;
+        [SerializeField] private SpriteRenderer spriteRenderer;
 
         [Header("States")] 
         [field: SerializeField] public Stat Stat { get; private set; }
@@ -54,6 +56,8 @@ namespace Player
         private void FixedUpdate()
         {
             rb.linearVelocity = MoveInput;
+            animator.SetBool("Walking", MoveInput.magnitude > 0f); 
+            spriteRenderer.flipX = MoveInput.x < 0f;
             
             var deltaTime = Time.fixedDeltaTime;
 
