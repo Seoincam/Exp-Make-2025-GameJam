@@ -1,4 +1,5 @@
 using Shared.Stat;
+using UnityEngine;
 
 namespace Combat.Shoot
 {
@@ -9,5 +10,6 @@ namespace Combat.Shoot
     {
         Stat Stat { get; }
         EffectManager EffectManager { get; }
+        Transform Transform { get; }
     }
 }

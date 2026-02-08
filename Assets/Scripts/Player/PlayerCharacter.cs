@@ -23,7 +23,8 @@ namespace Player
         [Header("States")] 
         [field: SerializeField] public Stat Stat { get; private set; }
         [field: SerializeField] public EffectManager EffectManager { get; private set; }
-        
+        public Transform Transform => transform;
+
         private PlayerInputController _input;
         
         public static PlayerCharacter Current { get; private set; }

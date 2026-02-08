@@ -1,3 +1,4 @@
+using System;
 using Combat.Shoot;
 using Shared.Stat;
 using UnityEngine;
@@ -49,30 +50,34 @@ namespace DamageArea
             }
         }
 
-        private IEntity[] GetEntitiesInArea()
+        private IDamagable[] GetEntitiesInArea()
         {
             var hits = Physics2D.OverlapCircleAll(transform.position, radius);
 
-            using var _ = ListPool<IEntity>.Get(out var result);
+            using var _ = ListPool<IDamagable>.Get(out var result);
 
             foreach (var hit in hits)
             {
-                if (hit.TryGetComponent(out IEntity entity))
-                    result.Add(entity);
+                if (hit.TryGetComponent(out IDamagable enemy))
+                    result.Add(enemy);
             }
 
             return result.ToArray();
         }
 
-        private void ApplyDamage(IEntity[] entities)
+        private void ApplyDamage(IDamagable[] entities)
         {
-            var effectSpec = Effect.CreateSpec(EffectType.Damage)
-                .AddHandler(new InstantStatHandler(StatType.Health, -damage));
-
+            Debug.Log($"범위 데미지! 범위 내: {entities.Length}");
             foreach (var entity in entities)
             {
-                entity.EffectManager.AddEffect(effectSpec);
+                entity.Damage(new DamageInfo(damage));
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
+            Gizmos.DrawWireSphere(transform.position, radius);
         }
     }
 }

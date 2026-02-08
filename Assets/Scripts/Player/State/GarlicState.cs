@@ -6,6 +6,7 @@ namespace Player.State
 {
     public class GarlicState : PlayerStateBase
     {
+        private GameObject _garlicPassiveArea;
         
         public GarlicState(IEntity entity) : base(entity)
         {
@@ -14,6 +15,8 @@ namespace Player.State
 
         public override void OnEnter()
         {
+            var prefab = Resources.Load<GameObject>("Prefabs/Garlic Passive Area");
+            _garlicPassiveArea = Object.Instantiate(prefab, Entity.Transform);
         }
 
         public override void OnTick(float deltaTime)
@@ -22,6 +25,7 @@ namespace Player.State
 
         public override void OnExit()
         {
+            Object.Destroy(_garlicPassiveArea);
         }
 
         public override void OnDamage(DamageInfo damageInfo)
