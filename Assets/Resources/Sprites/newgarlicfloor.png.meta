@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: a80d53aef48571940a741ded3d440735
+guid: 31ae16c45cd7542d0aac007dc5d19af2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5325328882501761578
-    second: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_0"
-  - first:
-      213: 4489002562003284819
-    second: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_1"
-  - first:
-      213: -329725487654731485
-    second: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_2"
+      213: -270293740457548763
+    second: newgarlicfloor_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -81,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -102,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_0"
+      name: newgarlicfloor_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 4
-        width: 14
-        height: 13
+        x: 99
+        y: 109
+        width: 442
+        height: 422
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,52 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a2a35a1676e57e940800000000000000
-      internalID: 5325328882501761578
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_1"
-      rect:
-        serializedVersion: 2
-        x: 17
-        y: 2
-        width: 30
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3533600eb042c4e30800000000000000
-      internalID: 4489002562003284819
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_2"
-      rect:
-        serializedVersion: 2
-        x: 58
-        y: 2
-        width: 51
-        height: 45
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 32182fa7a649c6bf0800000000000000
-      internalID: -329725487654731485
+      spriteID: 524240f6649bf3cf0800000000000000
+      internalID: -270293740457548763
       vertices: []
       indices: 
       edges: []
@@ -198,9 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_0": 5325328882501761578
-      "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_1": 4489002562003284819
-      "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_2": -329725487654731485
+      newgarlicfloor_0: -270293740457548763
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
