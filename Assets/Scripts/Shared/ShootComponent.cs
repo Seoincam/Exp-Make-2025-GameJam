@@ -130,16 +130,79 @@ namespace Combat.Shoot
                 return null;
             }
 
-            var bulletComp = BulletPool.Spawn(bulletPrefab, transform.position, Quaternion.identity);
-            if (bulletComp)
+            float damage = ResolveDamageFromOwner();
+
+            if (IsCurrentBullet<FlyingFishRoeBullet>())
             {
-                float damage = ResolveDamageFromOwner();
-                bulletComp.Init(target, damage, gameObject);
-                animator.SetTrigger("Attack");
-                face.Animator.SetTrigger("Attack");
+                return FireSpreadAtTarget(target, damage);
             }
 
+            var bulletComp = BulletPool.Spawn(bulletPrefab, transform.position, Quaternion.identity);
+            if (!bulletComp)
+            {
+                return null;
+            }
+
+            bulletComp.Init(target, damage, gameObject);
+            TriggerAttackAnimation();
             return bulletComp ? bulletComp.gameObject : null;
+        }
+
+        private GameObject FireSpreadAtTarget(Transform target, float damage)
+        {
+            Vector2 baseDirection = ((Vector2)target.position - (Vector2)transform.position);
+            if (baseDirection.sqrMagnitude <= Mathf.Epsilon)
+            {
+                baseDirection = Vector2.right;
+            }
+            baseDirection.Normalize();
+
+            float[] angles = { 0f, -15f, 15f };
+            GameObject firstSpawned = null;
+
+            for (int i = 0; i < angles.Length; i++)
+            {
+                var bulletComp = BulletPool.Spawn(bulletPrefab, transform.position, Quaternion.identity);
+                if (!bulletComp)
+                {
+                    continue;
+                }
+
+                if (bulletComp is FlyingFishRoeBullet roeBullet)
+                {
+                    roeBullet.SetInitialDirection(Rotate(baseDirection, angles[i]));
+                }
+
+                bulletComp.Init(target, damage, gameObject);
+
+                if (firstSpawned == null)
+                {
+                    firstSpawned = bulletComp.gameObject;
+                }
+            }
+
+            if (firstSpawned != null)
+            {
+                TriggerAttackAnimation();
+            }
+
+            return firstSpawned;
+        }
+
+        private void TriggerAttackAnimation()
+        {
+            animator.SetTrigger("Attack");
+            face.Animator.SetTrigger("Attack");
+        }
+
+        private static Vector2 Rotate(Vector2 direction, float degrees)
+        {
+            float radians = degrees * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(radians);
+            float sin = Mathf.Sin(radians);
+            return new Vector2(
+                direction.x * cos - direction.y * sin,
+                direction.x * sin + direction.y * cos);
         }
 
         public bool TryFire()

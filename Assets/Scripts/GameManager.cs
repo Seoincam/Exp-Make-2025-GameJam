@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     }
 
     public int GetMonsters = 0;
-    [SerializeField] private int toNext = 5;
+    private int toNext = 30;
     [SerializeField, Min(0)] private int maxStage = 0; // 0 = unlimited
     public int CurrentStage = 1;
 

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e60dce6a677d984c8298f5f0a23cb02, type: 3}
   m_Name: FlyingFishRoe
   m_EditorClassIdentifier: Assembly-CSharp::BulletSO
-  bulletPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 4720526849940897613, guid: fd714d86671e4a6096784ad46a5736f5, type: 3}
   bulletCount: 30
