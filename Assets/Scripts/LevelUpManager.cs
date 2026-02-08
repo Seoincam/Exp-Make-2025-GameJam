@@ -68,7 +68,7 @@ namespace DefaultNamespace
         {
             var effectSpec = Effect.CreateSpec(EffectType.Test)
                 .SetUnique()
-                .AddHandler(new InstantStatHandler(StatType.Damage, 2f));
+                .AddHandler(new InstantStatHandler(StatType.Damage, 1¤©));
             Player.EffectManager.AddEffect(effectSpec);
             HideUI();
         }
@@ -77,7 +77,7 @@ namespace DefaultNamespace
         {
             var effectSpec = Effect.CreateSpec(EffectType.Test)
                 .SetUnique()
-                .AddHandler(new InstantStatHandler(StatType.FireInterval, -0.5f));
+                .AddHandler(new InstantStatHandler(StatType.FireInterval, -0.25f));
             Player.EffectManager.AddEffect(effectSpec);
             HideUI();
         }
@@ -86,7 +86,7 @@ namespace DefaultNamespace
         {
             var effectSpec = Effect.CreateSpec(EffectType.Test)
                 .SetUnique()
-                .AddHandler(new InstantStatHandler(StatType.MoveSpeed, 2f));
+                .AddHandler(new InstantStatHandler(StatType.MoveSpeed, 1f));
             Player.EffectManager.AddEffect(effectSpec);
             HideUI();
         }
