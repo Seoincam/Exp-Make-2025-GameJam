@@ -11,7 +11,6 @@ namespace DefaultNamespace
     {
         [SerializeField] private List<Button> buttons = new();
         
-        private bool _upgraded;
         private PlayerCharacter Player => PlayerCharacter.Current;
 
         private void Awake()
@@ -40,13 +39,14 @@ namespace DefaultNamespace
 
         private void OnStatChanged(in Stat.StatChangedEventArgs args)
         {
-            if (_upgraded) return;
-
             if (args.Type == StatType.Exp)
             {
-                if ((int)args.NewFinalValue > 3)
+                if ((int)args.NewFinalValue > 5)
                 {
-                    _upgraded = true;
+                    var spec = Effect.CreateSpec(EffectType.Test)
+                        .AddHandler(new InstantStatHandler(StatType.Exp, -5));
+                    Player.EffectManager.AddEffect(spec);
+                    
                     ShowUI();
                 }
             }
@@ -55,11 +55,13 @@ namespace DefaultNamespace
         private void ShowUI()
         {
             gameObject.SetActive(true);
+            Time.timeScale = 0;
         }
 
         private void HideUI()
         {
             gameObject.SetActive(false);
+            Time.timeScale = 1;
         }
 
         private void OnClickAttackUp()
