@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,9 +18,16 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     [Min(1)]
     [SerializeField] private int spawnCountPerWave = 12;
 
+    [Tooltip("If true, starts a new wave again after finishing one wave.")]
+    [SerializeField] private bool repeatWaves = true;
+
     [Tooltip("Interval between batches (seconds)")]
     [Min(0f)]
     [SerializeField] private float spawnIntervalSeconds = 1f;
+
+    [Tooltip("Interval between waves (seconds)")]
+    [Min(0f)]
+    [SerializeField] private float waveIntervalSeconds = 0f;
 
     [Tooltip("How many monsters are spawned per batch")]
     [Min(1)]
@@ -128,47 +135,64 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
             yield break;
         }
 
-        int spawned = 0;
-
-        while (spawned < spawnCountPerWave)
+        while (true)
         {
-            int toSpawnThisBatch = Mathf.Min(spawnBatchSize, spawnCountPerWave - spawned);
+            int spawned = 0;
 
-            Vector3[] usedPositions = (minSeparationInBatch > 0f) ? new Vector3[toSpawnThisBatch] : null;
-            int usedCount = 0;
-
-            for (int i = 0; i < toSpawnThisBatch; i++)
+            while (spawned < spawnCountPerWave)
             {
-                var prefab = PickWeightedPrefab();
-                if (prefab == null)
+                int toSpawnThisBatch = Mathf.Min(spawnBatchSize, spawnCountPerWave - spawned);
+
+                Vector3[] usedPositions = (minSeparationInBatch > 0f) ? new Vector3[toSpawnThisBatch] : null;
+                int usedCount = 0;
+
+                for (int i = 0; i < toSpawnThisBatch; i++)
                 {
-                    continue;
+                    var prefab = PickWeightedPrefab();
+                    if (prefab == null)
+                    {
+                        continue;
+                    }
+
+                    if (TryGetSpawnPosition(out Vector3 pos, usedPositions, usedCount))
+                    {
+                        Instantiate(prefab, pos, Quaternion.identity, spawnParent);
+                        spawned++;
+
+                        if (usedPositions != null)
+                        {
+                            usedPositions[usedCount++] = pos;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"{nameof(WeightedOutOfRangeSpawner)}: failed to find valid spawn position.");
+                    }
                 }
 
-                if (TryGetSpawnPosition(out Vector3 pos, usedPositions, usedCount))
+                if (spawned >= spawnCountPerWave)
                 {
-                    Instantiate(prefab, pos, Quaternion.identity, spawnParent);
-                    spawned++;
+                    break;
+                }
 
-                    if (usedPositions != null)
-                    {
-                        usedPositions[usedCount++] = pos;
-                    }
+                if (spawnIntervalSeconds > 0f)
+                {
+                    yield return new WaitForSeconds(spawnIntervalSeconds);
                 }
                 else
                 {
-                    Debug.LogWarning($"{nameof(WeightedOutOfRangeSpawner)}: failed to find valid spawn position.");
+                    yield return null;
                 }
             }
 
-            if (spawned >= spawnCountPerWave)
+            if (!repeatWaves)
             {
                 break;
             }
 
-            if (spawnIntervalSeconds > 0f)
+            if (waveIntervalSeconds > 0f)
             {
-                yield return new WaitForSeconds(spawnIntervalSeconds);
+                yield return new WaitForSeconds(waveIntervalSeconds);
             }
             else
             {

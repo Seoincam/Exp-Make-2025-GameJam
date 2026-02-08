@@ -1,32 +1,33 @@
-using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // 싱글턴 아닌데 싱글턴임
+    // Project-level singleton
     public static GameManager Instance;
 
     private void Awake()
     {
         Instance = this;
     }
-    
+
     public int GetMonsters = 0;
-    private int ToNext = 5;
+    [SerializeField] private int toNext = 5;
+    [SerializeField, Min(0)] private int maxStage = 0; // 0 = unlimited
     public int CurrentStage = 1;
 
     public void CatchMonster()
     {
         GetMonsters++;
-        Debug.Log($"현재 몬스터{GetMonsters} 마리 잡음");
-        if (GetMonsters >= ToNext)
+        Debug.Log($"Monsters defeated: {GetMonsters}");
+        if (GetMonsters >= toNext)
         {
-            if (CurrentStage == 3)
+            if (maxStage > 0 && CurrentStage >= maxStage)
             {
                 EndGame();
+                return;
             }
 
-            Debug.Log($"다음 레벨로..");
+            Debug.Log("Stage up.");
             GetMonsters = 0;
             CurrentStage++;
         }
@@ -34,6 +35,5 @@ public class GameManager : MonoBehaviour
 
     private void EndGame()
     {
-        
     }
 }
