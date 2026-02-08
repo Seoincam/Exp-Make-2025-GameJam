@@ -17,6 +17,7 @@ namespace Player
         [SerializeField] private ShootComponent shootComponent;
         [SerializeField] private Animator animator;
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private Transform body;
         [SerializeField] private PlayerFace face;
 
         [Header("States")] 
@@ -210,7 +211,13 @@ namespace Player
 
         private void OnStatChanged(in Stat.StatChangedEventArgs args)
         {
-            
+            if (args.Type == StatType.Health)
+            {
+                if (args.NewFinalValue >= 101f)
+                {
+                    body.localScale = Vector3.one * args.NewFinalValue / 100f;
+                }
+            }
         }
     }
 }
