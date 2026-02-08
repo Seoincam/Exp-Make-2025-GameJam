@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 51d724876eb0d2d4ea1736efe961aa0c
+guid: f25d6fd732ceb4efe90e425295578ed2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5325328882501761578
-    second: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_0"
-  - first:
-      213: 4489002562003284819
-    second: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_1"
-  - first:
-      213: -329725487654731485
-    second: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_2"
+      213: 2704208188245951875
+    second: t1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -43,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -52,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 23
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -102,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_0"
+      name: t1_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 4
-        width: 14
-        height: 13
+        x: 0
+        y: 0
+        width: 913
+        height: 514
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,52 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a2a35a1676e57e940800000000000000
-      internalID: 5325328882501761578
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_1"
-      rect:
-        serializedVersion: 2
-        x: 17
-        y: 2
-        width: 30
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3533600eb042c4e30800000000000000
-      internalID: 4489002562003284819
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_2"
-      rect:
-        serializedVersion: 2
-        x: 58
-        y: 2
-        width: 51
-        height: 45
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 32182fa7a649c6bf0800000000000000
-      internalID: -329725487654731485
+      spriteID: 3854a1b0507478520800000000000000
+      internalID: 2704208188245951875
       vertices: []
       indices: 
       edges: []
@@ -188,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -198,9 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_0": 5325328882501761578
-      "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_1": 4489002562003284819
-      "\u1110\u1161\u110B\u1175\u1110\u1173\u11AF\u110B\u1175\u1106\u1175\u110C\u1175_2": -329725487654731485
+      t1_0: 2704208188245951875
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
