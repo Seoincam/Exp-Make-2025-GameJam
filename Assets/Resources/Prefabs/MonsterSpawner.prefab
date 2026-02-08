@@ -46,7 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterSpawner
   player: {fileID: 0}
   spawnCountPerWave: 15
+  repeatWaves: 1
   spawnIntervalSeconds: 5
+  waveIntervalSeconds: 0
   spawnBatchSize: 3
   noSpawnHalfWidthX: 15
   noSpawnHalfHeightY: 10
@@ -56,13 +58,24 @@ MonoBehaviour:
   maxPositionTries: 15
   minSeparationInBatch: 0.5
   spawnParent: {fileID: 0}
-  a:
-    prefab: {fileID: 717860563030547510, guid: ae9eba3e86efccb4bbdcecd8a62e6391, type: 3}
-    weight: 10
-  b:
-    prefab: {fileID: 7509096875413693350, guid: 46b706229aa425d4298483cf6bfb0e68, type: 3}
-    weight: 15
-  c:
-    prefab: {fileID: 0}
-    weight: 0
+  stageWeightedPrefabs:
+  - stage: 1
+    weightedPrefabs:
+    - prefab: {fileID: 7509096875413693350, guid: 46b706229aa425d4298483cf6bfb0e68, type: 3}
+      weight: 5
+    - prefab: {fileID: 717860563030547510, guid: ae9eba3e86efccb4bbdcecd8a62e6391, type: 3}
+      weight: 15
+  - stage: 2
+    weightedPrefabs:
+    - prefab: {fileID: 1839807058758456325, guid: 6c3b9c4a962a2fb42a2fc848f8c0c692, type: 3}
+      weight: 5
+    - prefab: {fileID: 717860563030547510, guid: fe87867c955b68e4eb9583b4dd919e48, type: 3}
+      weight: 15
+  - stage: 3
+    weightedPrefabs:
+    - prefab: {fileID: 1839807058758456325, guid: 682811aff9e1c274e856ccb50c327f1d, type: 3}
+      weight: 5
+    - prefab: {fileID: 123088886286255188, guid: 20236fd5b4ff6d245ae394824de3a01d, type: 3}
+      weight: 15
+  fallbackWeightedPrefabs: []
   startOnEnable: 1
