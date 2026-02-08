@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MyeongRan
   m_EditorClassIdentifier: Assembly-CSharp::MonsterData
   monsterName: MyeongRan
-  maxHp: 70
-  attackPower: 5
+  maxHp: 100
+  attackPower: 10
   attackCooldown: 1.5
   attackRange: 1.2
   pixelsPerUnit: 16
@@ -29,7 +29,7 @@ MonoBehaviour:
   - 60
   - 25
   - 15
-  category: 3
+  category: 1
   defaultHitStunSeconds: 0.3
   dropCurrencyAmount: 0
   currencyDropPrefab: {fileID: 0}

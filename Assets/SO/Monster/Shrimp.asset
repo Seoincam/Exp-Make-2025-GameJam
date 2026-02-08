@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Shrimp
   m_EditorClassIdentifier: Assembly-CSharp::MonsterData
   monsterName: Shrimp
-  maxHp: 30
+  maxHp: 50
   attackPower: 5
-  attackCooldown: 1.5
-  attackRange: 0
+  attackCooldown: 1
+  attackRange: 0.5
   pixelsPerUnit: 16
   moveSpeedPixelsPerSec: 10
   attackEnterDistance: 0

@@ -149,7 +149,7 @@ MonoBehaviour:
   riceDropRiseHeight: 0.35
   riceDropRiseSeconds: 0.12
   riceDropFallSeconds: 0.14
-  data: {fileID: 11400000, guid: fafac9675e83901439c39e7e6b256501, type: 2}
+  data: {fileID: 11400000, guid: 793d86b324377044d94c214d9207acc5, type: 2}
   monster_Id: 
   _killed: 0
   references:

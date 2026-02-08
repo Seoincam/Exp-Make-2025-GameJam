@@ -7,7 +7,7 @@ using UnityEngine;
 /// Spawns monsters outside a player-centered no-spawn box.
 /// - Wave: spawns spawnCountPerWave in total
 /// - Batch: spawns spawnBatchSize each burst, then waits spawnIntervalSeconds
-/// - Prefab selection: weighted random by current stage
+/// - Prefab selection: weight is computed from round and each monster's tier (tier 1 = early rounds, higher tier = later rounds).
 /// </summary>
 public class WeightedOutOfRangeSpawner : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
 
     [Header("Wave Settings")]
     [Min(1)]
-    [SerializeField] private int spawnCountPerWave = 12;
+    [SerializeField] private int spawnCountPerWave = 6;
 
     [Tooltip("If true, starts a new wave again after finishing one wave.")]
     [SerializeField] private bool repeatWaves = true;
@@ -59,9 +59,18 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
 
     [SerializeField] private Transform spawnParent;
 
-    [Header("Weighted Prefabs (By Stage)")]
-    [SerializeField] private List<StageWeightedPrefabs> stageWeightedPrefabs = new();
-    [SerializeField] private List<WeightedPrefab> fallbackWeightedPrefabs = new();
+    [Header("Monster Prefabs (Ratio by Round)")]
+    [Tooltip("Each monster has a tier (1 = early rounds, 2 = mid, 3 = late...). Spawn ratio is computed from current round vs tier.")]
+    [SerializeField] private List<MonsterPrefabEntry> monsterPrefabs = new();
+    [Tooltip("Peak weight when monster tier equals current round.")]
+    [Min(1)]
+    [SerializeField] private int roundPeakWeight = 10;
+    [Tooltip("Weight decrease per tier difference from round (e.g. 2 = tier 2 at round 1 gets weight 8).")]
+    [Min(0f)]
+    [SerializeField] private float tierFalloff = 2f;
+    [Tooltip("Extra weight added when entry is marked as basic mob. Keeps them appearing often even in later rounds.")]
+    [Min(0)]
+    [SerializeField] private int basicMobWeightBonus = 5;
 
     [Header("Auto Start")]
     [SerializeField] private bool startOnEnable = true;
@@ -69,18 +78,21 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     private Coroutine _running;
 
     [Serializable]
+    private struct MonsterPrefabEntry
+    {
+        public GameObject prefab;
+        [Tooltip("1 = early rounds, 2 = mid, 3 = late... Closer to current round = higher spawn chance.")]
+        [Min(1)]
+        public int tier;
+        [Tooltip("If true, adds basicMobWeightBonus to weight so this monster appears often even when round doesn't match tier.")]
+        public bool isBasicMob;
+    }
+
+    [Serializable]
     private struct WeightedPrefab
     {
         public GameObject prefab;
         [Min(0)] public int weight;
-    }
-
-    [Serializable]
-    private class StageWeightedPrefabs
-    {
-        [Min(1)]
-        public int stage = 1;
-        public List<WeightedPrefab> weightedPrefabs = new();
     }
 
     private void OnEnable()
@@ -121,6 +133,12 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
 
     private IEnumerator SpawnWaveCoroutine()
     {
+        int currentStageDifficulty = 1;
+        if (GameManager.Instance != null)
+        {
+            currentStageDifficulty = Mathf.Max(1, GameManager.Instance.CurrentStage);
+        }
+
         if (player == null)
         {
             Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: player is null.");
@@ -172,6 +190,20 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
 
                 if (spawned >= spawnCountPerWave)
                 {
+                     spawnCountPerWave =currentStageDifficulty*(currentStageDifficulty+3);
+                     if(spawnCountPerWave <12){
+                        spawnCountPerWave +=3;
+                        spawnBatchSize = spawnCountPerWave/3;
+                     }
+                     else if(spawnCountPerWave <40){
+                        spawnCountPerWave +=10;
+                        spawnBatchSize = spawnCountPerWave/10;
+                     }
+                     else{
+                        spawnCountPerWave = 50;
+                        spawnBatchSize = spawnCountPerWave/20;
+                     }
+                     Debug.Log("난이도 증가!");
                     break;
                 }
 
@@ -199,13 +231,17 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
                 yield return null;
             }
         }
+        
+       
+
+
 
         _running = null;
     }
 
     private GameObject PickWeightedPrefab()
     {
-        var candidates = GetWeightedPrefabsForCurrentStage();
+        var candidates = GetComputedWeightsForCurrentRound();
         if (candidates == null || candidates.Count == 0)
         {
             return null;
@@ -254,50 +290,43 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
         return null;
     }
 
-    private List<WeightedPrefab> GetWeightedPrefabsForCurrentStage()
+    /// <summary>
+    /// Computes spawn weights for each monster from current round and tier.
+    /// Weight = max(0, roundPeakWeight - tierFalloff * |tier - round|).
+    /// </summary>
+    private List<WeightedPrefab> GetComputedWeightsForCurrentRound()
     {
-        int currentStage = 1;
+        int round = 1;
         if (GameManager.Instance != null)
         {
-            currentStage = Mathf.Max(1, GameManager.Instance.CurrentStage);
+            round = Mathf.Max(1, GameManager.Instance.CurrentStage);
         }
 
-        StageWeightedPrefabs exact = null;
-        StageWeightedPrefabs nearestLower = null;
-        int nearestLowerStage = int.MinValue;
-
-        for (int i = 0; i < stageWeightedPrefabs.Count; i++)
+        var result = new List<WeightedPrefab>();
+        for (int i = 0; i < monsterPrefabs.Count; i++)
         {
-            var stageSet = stageWeightedPrefabs[i];
-            if (stageSet == null || stageSet.weightedPrefabs == null || stageSet.weightedPrefabs.Count == 0)
+            var entry = monsterPrefabs[i];
+            if (entry.prefab == null)
             {
                 continue;
             }
 
-            if (stageSet.stage == currentStage)
+            int tierDiff = Mathf.Abs(entry.tier - round);
+            float w = roundPeakWeight - tierFalloff * tierDiff;
+            int weight = Mathf.Max(0, Mathf.RoundToInt(w));
+            if (entry.isBasicMob && weight <= basicMobWeightBonus)
             {
-                exact = stageSet;
-                break;
+                weight += basicMobWeightBonus;
+            }
+            if (weight <= 0)
+            {
+                continue;
             }
 
-            if (stageSet.stage < currentStage && stageSet.stage > nearestLowerStage)
-            {
-                nearestLower = stageSet;
-                nearestLowerStage = stageSet.stage;
-            }
+            result.Add(new WeightedPrefab { prefab = entry.prefab, weight = weight });
         }
 
-        if (exact != null)
-        {
-            return exact.weightedPrefabs;
-        }
-
-        if (nearestLower != null)
-        {
-            return nearestLower.weightedPrefabs;
-        }
-
-        return fallbackWeightedPrefabs;
+        return result;
     }
 
     private bool TryGetSpawnPosition(out Vector3 pos, Vector3[] usedPositions, int usedCount)

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Spam
   m_EditorClassIdentifier: Assembly-CSharp::MonsterData
   monsterName: Scrubber
-  maxHp: 50
-  attackPower: 5
+  maxHp: 150
+  attackPower: 30
   attackCooldown: 1.5
   attackRange: 1.2
   pixelsPerUnit: 16
@@ -29,7 +29,7 @@ MonoBehaviour:
   - 60
   - 25
   - 15
-  category: 3
+  category: 4
   defaultHitStunSeconds: 0.3
   dropCurrencyAmount: 0
   currencyDropPrefab: {fileID: 0}
