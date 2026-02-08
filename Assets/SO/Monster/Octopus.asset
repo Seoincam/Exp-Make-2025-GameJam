@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Octopus
   m_EditorClassIdentifier: Assembly-CSharp::MonsterData
   monsterName: Octopus
-  maxHp: 100
+  maxHp: 30
   attackPower: 5
   attackCooldown: 1.5
   attackRange: 1.2

@@ -21,9 +21,19 @@ public class GameManager : MonoBehaviour
         Debug.Log($"현재 몬스터{GetMonsters} 마리 잡음");
         if (GetMonsters >= ToNext)
         {
+            if (CurrentStage == 3)
+            {
+                EndGame();
+            }
+
             Debug.Log($"다음 레벨로..");
             GetMonsters = 0;
             CurrentStage++;
         }
+    }
+
+    private void EndGame()
+    {
+        
     }
 }

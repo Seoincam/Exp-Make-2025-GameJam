@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfc00a4e40923d9478f5d3408c22d6cd, type: 3}
   m_Name: SoyCrab
   m_EditorClassIdentifier: Assembly-CSharp::MonsterData
-  monsterName: OliveOil
-  maxHp: 100
+  monsterName: SoyCrab
+  maxHp: 150
   attackPower: 5
   attackCooldown: 1.5
   attackRange: 1.2
