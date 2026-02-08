@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Player.State;
 using UnityEngine;
 
 /// <summary>
@@ -9,6 +11,7 @@ using UnityEngine;
 public class TimedWeaponItemSpawner : MonoBehaviour
 {
     private const string ItemPrefabResourcesPath = "Prefabs/Item";
+    private static readonly PlayerState[] WeaponTypes = (PlayerState[])Enum.GetValues(typeof(PlayerState));
 
     [Header("Target")]
     [SerializeField] private Transform player;
@@ -132,7 +135,7 @@ public class TimedWeaponItemSpawner : MonoBehaviour
             return;
         }
 
-        int randomIndex = Random.Range(0, _weaponItemPrefabs.Count);
+        int randomIndex = UnityEngine.Random.Range(0, _weaponItemPrefabs.Count);
         GameObject prefab = _weaponItemPrefabs[randomIndex];
         if (!prefab)
         {
@@ -140,15 +143,16 @@ public class TimedWeaponItemSpawner : MonoBehaviour
         }
 
         Vector3 spawnPos = GetRandomPositionAroundPlayer();
-        Instantiate(prefab, spawnPos, Quaternion.identity);
+        GameObject spawned = Instantiate(prefab, spawnPos, Quaternion.identity);
+        InitializeWeaponItemFromRandomType(spawned);
     }
 
     private Vector3 GetRandomPositionAroundPlayer()
     {
         float minR = Mathf.Max(0f, minSpawnDistance);
         float maxR = Mathf.Max(minR, maxSpawnDistance);
-        float radius = Random.Range(minR, maxR);
-        float angle = Random.Range(0f, Mathf.PI * 2f);
+        float radius = UnityEngine.Random.Range(minR, maxR);
+        float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
 
         Vector3 center = player.position;
         float x = center.x + Mathf.Cos(angle) * radius;
@@ -208,5 +212,42 @@ public class TimedWeaponItemSpawner : MonoBehaviour
         }
 
         return prefab.GetComponentInChildren<WeaponItem>(true) != null;
+    }
+
+    private void InitializeWeaponItemFromRandomType(GameObject spawned)
+    {
+        if (!spawned)
+        {
+            return;
+        }
+
+        var weaponItem = spawned.GetComponent<WeaponItem>();
+        if (!weaponItem)
+        {
+            weaponItem = spawned.GetComponentInChildren<WeaponItem>(true);
+        }
+
+        if (!weaponItem)
+        {
+            if (logWarnings)
+            {
+                Debug.LogWarning($"{nameof(TimedWeaponItemSpawner)}: spawned object has no {nameof(WeaponItem)} component.");
+            }
+            return;
+        }
+
+        PlayerState randomType = PickRandomWeaponType();
+        weaponItem.Initialize(randomType);
+    }
+
+    private static PlayerState PickRandomWeaponType()
+    {
+        if (WeaponTypes == null || WeaponTypes.Length == 0)
+        {
+            return PlayerState.Anchovy;
+        }
+
+        int randomIndex = UnityEngine.Random.Range(0, WeaponTypes.Length);
+        return WeaponTypes[randomIndex];
     }
 }
