@@ -39,14 +39,10 @@ namespace DefaultNamespace
 
         private void OnStatChanged(in Stat.StatChangedEventArgs args)
         {
-            if (args.Type == StatType.Exp)
+            if (args.Type == StatType.Exp && !Mathf.Approximately(args.OldFinalValue, args.NewFinalValue))
             {
-                if ((int)args.NewFinalValue > 5)
+                if ((int)args.NewFinalValue % 5 == 0)
                 {
-                    var spec = Effect.CreateSpec(EffectType.Test)
-                        .AddHandler(new InstantStatHandler(StatType.Exp, -5));
-                    Player.EffectManager.AddEffect(spec);
-                    
                     ShowUI();
                 }
             }
@@ -67,8 +63,7 @@ namespace DefaultNamespace
         private void OnClickAttackUp()
         {
             var effectSpec = Effect.CreateSpec(EffectType.Test)
-                .SetUnique()
-                .AddHandler(new InstantStatHandler(StatType.Damage, 1¤©));
+                .AddHandler(new InstantStatHandler(StatType.Damage, 1f));
             Player.EffectManager.AddEffect(effectSpec);
             HideUI();
         }
@@ -76,7 +71,6 @@ namespace DefaultNamespace
         private void OnClickAttackSpeedUp()
         {
             var effectSpec = Effect.CreateSpec(EffectType.Test)
-                .SetUnique()
                 .AddHandler(new InstantStatHandler(StatType.FireInterval, -0.25f));
             Player.EffectManager.AddEffect(effectSpec);
             HideUI();
@@ -85,7 +79,6 @@ namespace DefaultNamespace
         private void OnClickMoveSpeedUp()
         {
             var effectSpec = Effect.CreateSpec(EffectType.Test)
-                .SetUnique()
                 .AddHandler(new InstantStatHandler(StatType.MoveSpeed, 1f));
             Player.EffectManager.AddEffect(effectSpec);
             HideUI();
