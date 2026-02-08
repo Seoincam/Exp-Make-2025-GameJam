@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e60dce6a677d984c8298f5f0a23cb02, type: 3}
   m_Name: Garlic
   m_EditorClassIdentifier: Assembly-CSharp::BulletSO
-  bulletPrefab: {fileID: 0}
+  bulletImage: {fileID: 21300000, guid: c73cb0ca844878741aac8eb401bd38f1, type: 3}
+  bulletPrefab: {fileID: 4720526849940897613, guid: 366794d8b2ddf4347b31fa6eb31fae31, type: 3}
   bulletCount: 20

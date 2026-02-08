@@ -8,7 +8,6 @@ public sealed class WeaponItem : Item
     private const string BulletSoResourceRoot = "Prefabs/BulletSO";
 
     [SerializeField] private PlayerState weaponType = PlayerState.Anchovy;
-    [SerializeField] private float baseHealthAmount = 10f;
     
     [Header("Runtime (From SO)")]
     [SerializeField] private GameObject bulletPrefab;
@@ -53,14 +52,13 @@ public sealed class WeaponItem : Item
 
         bool hasPendingStatChange = false;
 
-        float healthAmount = Mathf.Max(0f, baseHealthAmount);
-        if (healthAmount > 0f)
+        float weaponAmount = Mathf.Max(0f, bulletCount);
+        if (weaponAmount > 0f)
         {
-            player.Stat.ModifyBaseValue(StatType.Health, healthAmount);
+            player.Stat.ModifyBaseValue(StatType.Health, weaponAmount);
             hasPendingStatChange = true;
         }
 
-        float weaponAmount = Mathf.Max(0f, bulletCount);
         if (weaponAmount > 0f && TryGetWeaponStatType(weaponType, out var statType))
         {
             player.Stat.ModifyBaseValue(statType, weaponAmount);
