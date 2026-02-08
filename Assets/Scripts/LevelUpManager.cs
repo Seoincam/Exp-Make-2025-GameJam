@@ -75,7 +75,7 @@ namespace DefaultNamespace
         {
             var effectSpec = Effect.CreateSpec(EffectType.Test)
                 .SetUnique()
-                .AddHandler(new InstantStatHandler(StatType.FireInterval, 2f));
+                .AddHandler(new InstantStatHandler(StatType.FireInterval, -0.5f));
             Player.EffectManager.AddEffect(effectSpec);
             HideUI();
         }
