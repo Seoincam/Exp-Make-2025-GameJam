@@ -19,6 +19,13 @@ namespace Player
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Transform body;
         [SerializeField] private PlayerFace face;
+        [SerializeField] private SpriteRenderer hat;
+
+        [Space] public Sprite anchovy;
+        public Sprite flyingfish;
+        public Sprite Sausage;
+        public Sprite Garlic;
+        public Sprite Tuna;
 
         [Header("States")] 
         [field: SerializeField] public Stat Stat { get; private set; }
@@ -163,16 +170,22 @@ namespace Player
             switch (stateType)
             {
                 case PlayerState.Anchovy:
+                    hat.sprite = anchovy;
                     return new AnchovyState(this);
                 case PlayerState.FlyingFishRoe:
+                    hat.sprite = flyingfish;
                     return new FlyingFishRoeState(this);
                 case PlayerState.Sausage:
+                    hat.sprite = Sausage;
                     return new SausageState(this);
                 case PlayerState.Garlic:
+                    hat.sprite = Garlic;
                     return new GarlicState(this);
                 case PlayerState.ChiliPepperAndTuna:
+                    hat.sprite = Tuna;
                     return new ChiliPepperAndTunaState(this);
                 default:
+                    hat.sprite = null;
                     return null;
             }
         }
