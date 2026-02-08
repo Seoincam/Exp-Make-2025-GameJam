@@ -1729,7 +1729,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e176a9a9cb7be24ba17410af176b80a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  currentSection: 1
   GetMonsters: 0
   CurrentStage: 1
 --- !u!1 &292620440 stripped
@@ -2523,7 +2522,7 @@ PrefabInstance:
     - target: {fileID: 682087396302305402, guid: 865507b13ab18b14b90fcb4092bfeb78, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1711041281}
     - target: {fileID: 1341388115426203970, guid: 865507b13ab18b14b90fcb4092bfeb78, type: 3}
       propertyPath: m_Name
       value: MonsterSpawner
@@ -5270,6 +5269,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
+--- !u!4 &1711041281 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3964338104752593718, guid: 79f8cd1b8bea74636afe3a3343b0b141, type: 3}
+  m_PrefabInstance: {fileID: 1711041280}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1749680246
 PrefabInstance:
   m_ObjectHideFlags: 0
