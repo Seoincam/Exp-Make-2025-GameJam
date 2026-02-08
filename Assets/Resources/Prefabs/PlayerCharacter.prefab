@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3964338104752593718}
   - component: {fileID: 6834652807165124948}
   - component: {fileID: 2409504371002901391}
+  - component: {fileID: 2233237779742393441}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -50,7 +51,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -74,7 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f8ba6d512b4045816b19a7a1e4f2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerCharacter
-  rb: {fileID: 858177341474544823}
+  rb: {fileID: 6834652807165124948}
   statConfig: {fileID: 11400000, guid: bfd03c005b7d34ed0941da733620df13, type: 2}
   shootComponent: {fileID: 4301031695183690072}
   animator: {fileID: 4597705894709217653}
@@ -88,6 +89,24 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &2233237779742393441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846929161508904280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3385d7bf5f70348ef95c67b7821b15fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInputController
+  virtualJoystick: {fileID: 0}
+  shootComponent: {fileID: 0}
+  playerCharacter: {fileID: 0}
+  fallbackFireInterval: 0.2
+  selfDamageOnFire: 1
+  inputCooldownSeconds: 1
 --- !u!1 &1959743156748530855
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,8 +246,6 @@ GameObject:
   m_Component:
   - component: {fileID: 815792335461403768}
   - component: {fileID: 4120280165950786324}
-  - component: {fileID: 858177341474544823}
-  - component: {fileID: 8316837619882256830}
   - component: {fileID: 3895564161312937287}
   - component: {fileID: 4301031695183690072}
   - component: {fileID: 4597705894709217653}
@@ -313,51 +330,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!50 &858177341474544823
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3720222280934223978}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!114 &8316837619882256830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3720222280934223978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3385d7bf5f70348ef95c67b7821b15fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInputController
-  virtualJoystick: {fileID: 0}
-  shootComponent: {fileID: 0}
-  playerCharacter: {fileID: 0}
-  fallbackFireInterval: 0.2
-  selfDamageOnFire: 1
-  inputCooldownSeconds: 1
 --- !u!114 &3895564161312937287
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,22 +3,22 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // 싱글턴 아닌데 싱글턴임 ㅋ
+    // 싱글턴 아닌데 싱글턴임
     public static GameManager Instance;
 
     private void Awake()
     {
         Instance = this;
     }
-
+    
     public int GetMonsters = 0;
     private int ToNext = 5;
     public int CurrentStage = 1;
 
     public void CatchMonster()
     {
-        Debug.Log($"현재 몬스터{GetMonsters} 마리 잡음");
         GetMonsters++;
+        Debug.Log($"현재 몬스터{GetMonsters} 마리 잡음");
         if (GetMonsters >= ToNext)
         {
             Debug.Log($"다음 레벨로..");

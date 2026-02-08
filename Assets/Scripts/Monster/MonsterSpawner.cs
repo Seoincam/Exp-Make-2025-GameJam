@@ -1,12 +1,13 @@
-using System;
+癤퓎sing System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 플레이어 기준으로 "일정 거리(사각 범위) 밖"에서 스폰.
-/// - 웨이브: 총 spawnCountPerWave 마리를 스폰
-/// - 배치(버스트): spawnBatchSize 마리씩 한 번에 스폰, 배치 간 간격 spawnIntervalSeconds
-/// - 프리팹 3종 가중치 랜덤 선택
+/// Spawns monsters outside a player-centered no-spawn box.
+/// - Wave: spawns spawnCountPerWave in total
+/// - Batch: spawns spawnBatchSize each burst, then waits spawnIntervalSeconds
+/// - Prefab selection: weighted random by current stage
 /// </summary>
 public class WeightedOutOfRangeSpawner : MonoBehaviour
 {
@@ -17,11 +18,11 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     [Min(1)]
     [SerializeField] private int spawnCountPerWave = 12;
 
-    [Tooltip("배치(버스트) 사이의 간격(초)")]
+    [Tooltip("Interval between batches (seconds)")]
     [Min(0f)]
     [SerializeField] private float spawnIntervalSeconds = 1f;
 
-    [Tooltip("한 번(한 배치)에 몇 마리를 동시에 스폰할지")]
+    [Tooltip("How many monsters are spawned per batch")]
     [Min(1)]
     [SerializeField] private int spawnBatchSize = 3;
 
@@ -45,16 +46,15 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     [Range(1, 50)]
     [SerializeField] private int maxPositionTries = 15;
 
-    [Tooltip("한 배치 내에서 여러 마리가 너무 겹치지 않게 최소 거리(0이면 제한 없음)")]
+    [Tooltip("Minimum separation in same batch (0 = no separation check)")]
     [Min(0f)]
     [SerializeField] private float minSeparationInBatch = 0.5f;
 
     [SerializeField] private Transform spawnParent;
 
-    [Header("Weighted Prefabs (3 Types)")]
-    [SerializeField] private WeightedPrefab a;
-    [SerializeField] private WeightedPrefab b;
-    [SerializeField] private WeightedPrefab c;
+    [Header("Weighted Prefabs (By Stage)")]
+    [SerializeField] private List<StageWeightedPrefabs> stageWeightedPrefabs = new();
+    [SerializeField] private List<WeightedPrefab> fallbackWeightedPrefabs = new();
 
     [Header("Auto Start")]
     [SerializeField] private bool startOnEnable = true;
@@ -68,10 +68,20 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
         [Min(0)] public int weight;
     }
 
+    [Serializable]
+    private class StageWeightedPrefabs
+    {
+        [Min(1)]
+        public int stage = 1;
+        public List<WeightedPrefab> weightedPrefabs = new();
+    }
+
     private void OnEnable()
     {
         if (startOnEnable)
+        {
             StartWave();
+        }
     }
 
     private void OnDisable()
@@ -82,14 +92,22 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     [ContextMenu("Start Wave")]
     public void StartWave()
     {
-        if (_running != null) return;
+        if (_running != null)
+        {
+            return;
+        }
+
         _running = StartCoroutine(SpawnWaveCoroutine());
     }
 
     [ContextMenu("Stop Wave")]
     public void StopWave()
     {
-        if (_running == null) return;
+        if (_running == null)
+        {
+            return;
+        }
+
         StopCoroutine(_running);
         _running = null;
     }
@@ -98,14 +116,14 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
     {
         if (player == null)
         {
-            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: Player가 비어있습니다.");
+            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: player is null.");
             _running = null;
             yield break;
         }
 
         if (spawnAreaHalfWidthX <= noSpawnHalfWidthX || spawnAreaHalfHeightY <= noSpawnHalfHeightY)
         {
-            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: SpawnAreaHalf 값은 NoSpawnHalf 값보다 커야 합니다.");
+            Debug.LogError($"{nameof(WeightedOutOfRangeSpawner)}: SpawnAreaHalf values must be larger than NoSpawnHalf values.");
             _running = null;
             yield break;
         }
@@ -116,15 +134,16 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
         {
             int toSpawnThisBatch = Mathf.Min(spawnBatchSize, spawnCountPerWave - spawned);
 
-            // 배치 내 겹침 방지(옵션)
-            // 배치에서 이미 뽑은 위치들과 일정 거리 이상 떨어진 위치만 허용
             Vector3[] usedPositions = (minSeparationInBatch > 0f) ? new Vector3[toSpawnThisBatch] : null;
             int usedCount = 0;
 
             for (int i = 0; i < toSpawnThisBatch; i++)
             {
                 var prefab = PickWeightedPrefab();
-                if (prefab == null) continue;
+                if (prefab == null)
+                {
+                    continue;
+                }
 
                 if (TryGetSpawnPosition(out Vector3 pos, usedPositions, usedCount))
                 {
@@ -132,20 +151,29 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
                     spawned++;
 
                     if (usedPositions != null)
+                    {
                         usedPositions[usedCount++] = pos;
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning($"{nameof(WeightedOutOfRangeSpawner)}: 유효한 스폰 위치를 찾지 못해 1회 스킵했습니다.");
+                    Debug.LogWarning($"{nameof(WeightedOutOfRangeSpawner)}: failed to find valid spawn position.");
                 }
             }
 
-            if (spawned >= spawnCountPerWave) break;
+            if (spawned >= spawnCountPerWave)
+            {
+                break;
+            }
 
             if (spawnIntervalSeconds > 0f)
+            {
                 yield return new WaitForSeconds(spawnIntervalSeconds);
+            }
             else
+            {
                 yield return null;
+            }
         }
 
         _running = null;
@@ -153,18 +181,99 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
 
     private GameObject PickWeightedPrefab()
     {
-        int wA = Mathf.Max(0, a.weight);
-        int wB = Mathf.Max(0, b.weight);
-        int wC = Mathf.Max(0, c.weight);
+        var candidates = GetWeightedPrefabsForCurrentStage();
+        if (candidates == null || candidates.Count == 0)
+        {
+            return null;
+        }
 
-        int total = wA + wB + wC;
-        if (total <= 0) return null;
+        int total = 0;
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            if (!candidates[i].prefab)
+            {
+                continue;
+            }
+
+            total += Mathf.Max(0, candidates[i].weight);
+        }
+
+        if (total <= 0)
+        {
+            return null;
+        }
 
         int r = UnityEngine.Random.Range(0, total);
-        if (r < wA) return a.prefab;
-        r -= wA;
-        if (r < wB) return b.prefab;
-        return c.prefab;
+
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            var candidate = candidates[i];
+            if (!candidate.prefab)
+            {
+                continue;
+            }
+
+            int weight = Mathf.Max(0, candidate.weight);
+            if (weight <= 0)
+            {
+                continue;
+            }
+
+            if (r < weight)
+            {
+                return candidate.prefab;
+            }
+
+            r -= weight;
+        }
+
+        return null;
+    }
+
+    private List<WeightedPrefab> GetWeightedPrefabsForCurrentStage()
+    {
+        int currentStage = 1;
+        if (GameManager.Instance != null)
+        {
+            currentStage = Mathf.Max(1, GameManager.Instance.CurrentStage);
+        }
+
+        StageWeightedPrefabs exact = null;
+        StageWeightedPrefabs nearestLower = null;
+        int nearestLowerStage = int.MinValue;
+
+        for (int i = 0; i < stageWeightedPrefabs.Count; i++)
+        {
+            var stageSet = stageWeightedPrefabs[i];
+            if (stageSet == null || stageSet.weightedPrefabs == null || stageSet.weightedPrefabs.Count == 0)
+            {
+                continue;
+            }
+
+            if (stageSet.stage == currentStage)
+            {
+                exact = stageSet;
+                break;
+            }
+
+            if (stageSet.stage < currentStage && stageSet.stage > nearestLowerStage)
+            {
+                nearestLower = stageSet;
+                nearestLowerStage = stageSet.stage;
+            }
+        }
+
+        if (exact != null)
+        {
+            return exact.weightedPrefabs;
+        }
+
+        if (nearestLower != null)
+        {
+            return nearestLower.weightedPrefabs;
+        }
+
+        return fallbackWeightedPrefabs;
     }
 
     private bool TryGetSpawnPosition(out Vector3 pos, Vector3[] usedPositions, int usedCount)
@@ -180,7 +289,10 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
                 Mathf.Abs(dx) <= noSpawnHalfWidthX &&
                 Mathf.Abs(dy) <= noSpawnHalfHeightY;
 
-            if (insideNoSpawn) continue;
+            if (insideNoSpawn)
+            {
+                continue;
+            }
 
             Vector3 candidate = new Vector3(p.x + dx, p.y + dy, spawnZ);
 
@@ -195,7 +307,11 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
                         break;
                     }
                 }
-                if (tooClose) continue;
+
+                if (tooClose)
+                {
+                    continue;
+                }
             }
 
             pos = candidate;
@@ -209,7 +325,10 @@ public class WeightedOutOfRangeSpawner : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
 
         Vector3 center = player.position;
         center.z = spawnZ;
